@@ -1,3 +1,4 @@
+-- Questions 1)
 -- a)
 select count(PlayerID) as players_having_unknow_birthdate from Master 
 where birthYear = 0 or birthMonth = 0 or birthDay = 0;
@@ -57,7 +58,6 @@ where a.sho > b.avg_sho;
 
 select count(a.playerID) as number_of_players_who_are_both_good_batters_and_good_pitchers from above_avg_hr as a 
 inner join above_avg_sho as b on a.playerID = b.playerID;
-
 
 -- remove all views
 -- drop view above_avg_hr;                    
