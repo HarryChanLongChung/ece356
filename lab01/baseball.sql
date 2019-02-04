@@ -68,3 +68,18 @@ inner join above_avg_sho as b on a.playerID = b.playerID;
 -- drop view player_with_at_leaset_1_homerun;
 -- drop view r;                  
 -- drop view sum_of_player;
+
+-- Questions 2)
+-- please change the file path when testing
+LOAD DATA LOCAL INFILE  '/Users/brickbai/Downloads/Fielding.csv'
+INTO TABLE Fielding
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(playerID, @yearID, @stint, teamID, lgID, POS, @G, GS, InnOuts, @PO, @A, @E, @DP, PB, WP, SB, CS, ZR)
+SET yearID = nullif(@yearID,''), -- to get rid of warnings
+    G = nullif(@G,''),
+    PO = nullif(@PO,''),
+    A = nullif(@A,''),
+    E = nullif(@E,''),
+    DP = nullif(@DP,'');
