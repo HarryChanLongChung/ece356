@@ -174,8 +174,23 @@ ADD CONSTRAINT `fk_AllstarFull_Master` FOREIGN KEY (playerID) REFERENCES Master 
 ALTER TABLE AllstarFull
 ADD CONSTRAINT `fk_AllstarFull_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
 
+ALTER TABLE AllstarFull
+ADD CONSTRAINT `fk_AllstarFull_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE AllstarFull
+ADD CONSTRAINT `fk_AllstarFull_Salaries` FOREIGN KEY (yearID, playerID, lgID) REFERENCES Salaries (yearID, playerID, lgID);
+
+ALTER TABLE AllstarFull
+ADD CONSTRAINT `fk_AllstarFull_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, teamID);
+
+ALTER TABLE AllstarFull
+ADD CONSTRAINT `fk_AllstarFull_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
+
 ALTER TABLE HallOfFame
 ADD CONSTRAINT `fk_HallOfFame_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
+
+ALTER TABLE HallOfFame
+ADD CONSTRAINT `fk_HallOfFame_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
 
 ALTER TABLE Managers
 ADD CONSTRAINT `fk_Managers_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
@@ -183,8 +198,38 @@ ADD CONSTRAINT `fk_Managers_Master` FOREIGN KEY (playerID) REFERENCES Master (pl
 ALTER TABLE Managers
 ADD CONSTRAINT `fk_Managers_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
 
+ALTER TABLE Managers
+ADD CONSTRAINT `fk_Managers_ManagersHalf` FOREIGN KEY (playerID, rank, G) REFERENCES ManagersHalf (playerID, rank, G);
+
+ALTER TABLE Managers
+ADD CONSTRAINT `fk_Managers_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE Managers
+ADD CONSTRAINT `fk_Managers_Salaries` FOREIGN KEY (yearID, playerID, lgID) REFERENCES Salaries (yearID, playerID, lgID);
+
+ALTER TABLE Managers
+ADD CONSTRAINT `fk_Managers_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, teamID);
+
+ALTER TABLE Managers
+ADD CONSTRAINT `fk_Managers_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
+
+ALTER TABLE Teams
+ADD CONSTRAINT `fk_Teams_Managers` FOREIGN KEY (playerID, G, Rank, yearID) REFERENCES Managers (playerID, G, rank, yearID);
+
 ALTER TABLE Teams
 ADD CONSTRAINT `fk_Teams_TeamsFranchises` FOREIGN KEY (franchID) REFERENCES TeamsFranchises (franchID);
+
+ALTER TABLE Teams
+ADD CONSTRAINT `fk_Teams_ManagersHalf` FOREIGN KEY (playerID, Rank, G) REFERENCES ManagersHalf (playerID, rank, G);
+
+ALTER TABLE Teams
+ADD CONSTRAINT `fk_Teams_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE Teams
+ADD CONSTRAINT `fk_Teams_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, teamID);
+
+ALTER TABLE Teams
+ADD CONSTRAINT `fk_Teams_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
 
 ALTER TABLE BattingPost
 ADD CONSTRAINT `fk_BattingPost_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
@@ -192,23 +237,61 @@ ADD CONSTRAINT `fk_BattingPost_Master` FOREIGN KEY (playerID) REFERENCES Master 
 ALTER TABLE BattingPost
 ADD CONSTRAINT `fk_BattingPost_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
 
+ALTER TABLE BattingPost
+ADD CONSTRAINT `fk_BattingPost_PitchingPost` FOREIGN KEY (playerID, yearID, round) REFERENCES PitchingPost (playerID, yearID, round);
+
+ALTER TABLE BattingPost
+ADD CONSTRAINT `fk_BattingPost_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE BattingPost
+ADD CONSTRAINT `fk_BattingPost_Salaries` FOREIGN KEY (yearID, playerID, lgID) REFERENCES Salaries (yearID, playerID, lgID);
+
+ALTER TABLE BattingPost
+ADD CONSTRAINT `fk_BattingPost_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, teamID);
+
+ALTER TABLE BattingPost
+ADD CONSTRAINT `fk_BattingPost_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
+
 ALTER TABLE PitchingPost
 ADD CONSTRAINT `fk_PitchingPost_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
 
 ALTER TABLE PitchingPost
 ADD CONSTRAINT `fk_PitchingPost_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
 
-ALTER TABLE Fielding
-ADD CONSTRAINT `fk_FieldingOF_Batting` FOREIGN KEY (yearID, playerID, stint) REFERENCES Batting (yearID, playerID, stint);
+
+
+
+
 
 ALTER TABLE Fielding
-ADD CONSTRAINT `fk_FieldingOF_Pitching` FOREIGN KEY (yearID, playerID, stint) REFERENCES Pitching (yearID, playerID, stint);
+ADD CONSTRAINT `fk_Fielding_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
 
 ALTER TABLE Fielding
-ADD CONSTRAINT `fk_FieldingOF_FieldingOF` FOREIGN KEY (yearID, playerID, stint) REFERENCES FieldingOF (yearID, playerID, stint);
+ADD CONSTRAINT `fk_Fielding_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
 
 ALTER TABLE Fielding
-ADD CONSTRAINT `fk_FieldingOF_FieldingOFsplit` FOREIGN KEY (playerID, yearID, Pos, InnOuts) REFERENCES FieldingOFsplit (playerID, yearID, Pos, InnOuts);
+ADD CONSTRAINT `fk_Fielding_FieldingOF` FOREIGN KEY (yearID, playerID, stint) REFERENCES FieldingOF (yearID, playerID, stint);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_FieldingOFsplit` FOREIGN KEY (playerID, yearID, Pos, InnOuts) REFERENCES FieldingOFsplit (playerID, yearID, Pos, InnOuts);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_Salaries` FOREIGN KEY (yearID, playerID, lgID) REFERENCES Salaries (yearID, playerID, lgID);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, teamID);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_Batting` FOREIGN KEY (yearID, playerID, stint) REFERENCES Batting (yearID, playerID, stint);
+
+ALTER TABLE Fielding
+ADD CONSTRAINT `fk_Fielding_Pitching` FOREIGN KEY (yearID, playerID, stint) REFERENCES Pitching (yearID, playerID, stint);
 
 ALTER TABLE FieldingOF
 ADD CONSTRAINT `fk_FieldingOF_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
@@ -272,3 +355,51 @@ ADD CONSTRAINT `fk_CollegePlaying_Master` FOREIGN KEY (playerID) REFERENCES Mast
 
 ALTER TABLE CollegePlaying
 ADD CONSTRAINT `fk_CollegePlaying_Schools` FOREIGN KEY (schoolID) REFERENCES Schools (schoolID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_FieldingOF` FOREIGN KEY (yearID, playerID, stint) REFERENCES FieldingOF (yearID, playerID, stint);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_Salaries` FOREIGN KEY (yearID, playerID, lgID) REFERENCES Salaries (yearID, playerID, lgID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, playerID, lgID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
+
+ALTER TABLE Batting
+ADD CONSTRAINT `fk_Batting_Pitching` FOREIGN KEY (yearID, playerID, stint) REFERENCES Pitching (yearID, playerID, stint);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_FieldingOF` FOREIGN KEY (yearID, playerID, stint) REFERENCES FieldingOF (yearID, playerID, stint);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_TeamsHalf` FOREIGN KEY (teamID, yearID, lgID) REFERENCES TeamsHalf (teamID, yearID, lgID);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_Salaries` FOREIGN KEY (yearID, playerID, lgID) REFERENCES Salaries (yearID, playerID, lgID);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_SeriesPost` FOREIGN KEY (yearID, teamID) REFERENCES SeriesPost (yearID, playerID, lgID);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
+
+ALTER TABLE Pitching
+ADD CONSTRAINT `fk_Pitching_Pitching` FOREIGN KEY (yearID, playerID, stint) REFERENCES Pitching (yearID, playerID, stint);
