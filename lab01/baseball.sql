@@ -93,10 +93,10 @@ ALTER TABLE AllstarFull
 ADD CONSTRAINT `pk_AllstarFull` PRIMARY KEY (playerID, gameID);
 
 ALTER TABLE HallOfFame
-ADD CONSTRAINT `pk_HallOfFame` PRIMARY KEY (playerID, yearid, votes);
+ADD CONSTRAINT `pk_HallOfFame` PRIMARY KEY (playerID, yearid, votedBy);
 
 ALTER TABLE Managers
-ADD CONSTRAINT `pk_Managers` PRIMARY KEY (playerID, G, rank, yearID);
+ADD CONSTRAINT `pk_Managers` PRIMARY KEY (playerID, yearID, inseason);
 
 ALTER TABLE Teams
 ADD CONSTRAINT `pk_Teams` PRIMARY KEY (teamID, yearID, lgID);
