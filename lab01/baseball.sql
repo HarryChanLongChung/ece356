@@ -356,6 +356,9 @@ ALTER TABLE ManagersHalf
 ADD CONSTRAINT `fk_ManagersHalf_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
 
 ALTER TABLE ManagersHalf
+ADD CONSTRAINT `fk_ManagersHalf_Managers` FOREIGN KEY (playerID, yearID, inseason) REFERENCES Managers (playerID, yearID, inseason);
+
+ALTER TABLE ManagersHalf
 ADD CONSTRAINT `fk_ManagersHalf_TeamsHalf` FOREIGN KEY (teamID, half) REFERENCES TeamsHalf (teamID, Half);
 
 ALTER TABLE ManagersHalf
