@@ -13,6 +13,7 @@ select (sum(review_count)/count(distinct user_id)) as avg_number_of_reviews from
 --      a. By direct reading from the Users table “average stars” column
 --      b. By computing an average of the ratings issued by a user for businesses reviewed
 -- For how many users is the difference between these two amounts larger than 0.5?
+-- Assumption: gonna ignore user_id that don't appear on the review table
 select count(a.user_id) as users_with_rating_difference from 
     (select distinct user_id, average_stars as direct_avg_stars from user) as a
     inner join 
