@@ -120,19 +120,19 @@ ALTER TABLE FieldingPost
 ADD CONSTRAINT `pk_FieldingPost` PRIMARY KEY (playerID, yearID, round, Pos);
 
 ALTER TABLE FieldingOFsplit
-ADD CONSTRAINT `pk_FieldingOFsplit` PRIMARY KEY (playerID, yearID, Pos, stint); -- change
+ADD CONSTRAINT `pk_FieldingOFsplit` PRIMARY KEY (playerID, yearID, Pos, stint);
 
 ALTER TABLE ManagersHalf
 ADD CONSTRAINT `pk_ManagersHalf` PRIMARY KEY (playerID, rank, G);
 
 ALTER TABLE TeamsHalf
-ADD CONSTRAINT `pk_TeamsHalf` PRIMARY KEY (teamID, Half); -- change
+ADD CONSTRAINT `pk_TeamsHalf` PRIMARY KEY (teamID, Half);
 
 ALTER TABLE Salaries
-ADD CONSTRAINT `pk_Salaries` PRIMARY KEY (yearID, playerID, lgID, teamID); -- change
+ADD CONSTRAINT `pk_Salaries` PRIMARY KEY (yearID, playerID, lgID, teamID);
 
 ALTER TABLE SeriesPost
-ADD CONSTRAINT `pk_SeriesPost` PRIMARY KEY (yearID, round); -- change
+ADD CONSTRAINT `pk_SeriesPost` PRIMARY KEY (yearID, round);
 
 ALTER TABLE AwardsManagers
 ADD CONSTRAINT `pk_AwardsManagers` PRIMARY KEY (yearID, awardID, playerID);
@@ -147,7 +147,7 @@ ALTER TABLE AwardsSharePlayers
 ADD CONSTRAINT `pk_AwardsSharePlayers` PRIMARY KEY (awardID, yearID, playerID);
 
 ALTER TABLE Appearances
-ADD CONSTRAINT `pk_Appearances` PRIMARY KEY (yearID, playerID, lgID, teamID); -- change
+ADD CONSTRAINT `pk_Appearances` PRIMARY KEY (yearID, playerID, lgID, teamID);
 
 ALTER TABLE Schools
 ADD CONSTRAINT `pk_Schools` PRIMARY KEY (schoolID);
