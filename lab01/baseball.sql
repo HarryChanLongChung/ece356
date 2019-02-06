@@ -168,6 +168,13 @@ ALTER TABLE Pitching
 ADD CONSTRAINT `pk_Pitching` PRIMARY KEY (yearID, playerID, stint);
 
 -- Now add the foreign keys for each table
+
+SET foreign_key_checks = 0;
+
+ALTER TABLE FieldingOFsplit MODIFY InnOuts VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci; -- To change the collation of InnOuts to match Fielding, otherwise cannot add foreign key
+
+ALTER TABLE FieldingOFsplit CHANGE InnOuts InnOuts VARCHAR(255) NOT NULL; -- This column cannot have NULL values so it can be inserted as foreign key.
+
 ALTER TABLE AllstarFull
 ADD CONSTRAINT `fk_AllstarFull_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
 
@@ -215,6 +222,9 @@ ADD CONSTRAINT `fk_BattingPost_Master` FOREIGN KEY (playerID) REFERENCES Master 
 
 ALTER TABLE BattingPost
 ADD CONSTRAINT `fk_BattingPost_Teams` FOREIGN KEY (teamID, yearID, lgID) REFERENCES Teams (teamID, yearID, lgID);
+
+ALTER TABLE BattingPost
+ADD CONSTRAINT `fk_BattingPost_PitchingPost` FOREIGN KEY (playerID, yearID, round) REFERENCES PitchingPost (playerID, yearID, round);
 
 ALTER TABLE BattingPost
 ADD CONSTRAINT `fk_BattingPost_Salaries` FOREIGN KEY (yearID, playerID, lgID, teamID) REFERENCES Salaries (yearID, playerID, lgID, teamID);
@@ -372,9 +382,6 @@ ADD CONSTRAINT `fk_Salaries_AwardsShareManagers` FOREIGN KEY (yearID, playerID) 
 ALTER TABLE Salaries
 ADD CONSTRAINT `fk_Salaries_Appearances` FOREIGN KEY (yearID, playerID, lgID, teamID) REFERENCES Appearances (yearID, playerID, lgID, teamID);
 
-ALTER TABLE SeriesPost
-ADD CONSTRAINT `fk_SeriesPost_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
-
 ALTER TABLE AwardsManagers
 ADD CONSTRAINT `fk_AwardsManagers_Master` FOREIGN KEY (playerID) REFERENCES Master (playerID);
 
@@ -478,10 +485,12 @@ ALTER TABLE Pitching
 ADD CONSTRAINT `fk_Pitching_AwardsShareManagers` FOREIGN KEY (yearID, playerID) REFERENCES AwardsShareManagers (yearID, playerID);
 
 ALTER TABLE Pitching
-ADD CONSTRAINT `fk_Pitching_Pitching` FOREIGN KEY (yearID, playerID, stint) REFERENCES Pitching (yearID, playerID, stint);
+ADD CONSTRAINT `fk_Pitching_Batting` FOREIGN KEY (yearID, playerID, stint) REFERENCES Batting (yearID, playerID, stint);
 
 ALTER TABLE Pitching
 ADD CONSTRAINT `fk_Pitching_Appearances` FOREIGN KEY (yearID, playerID, lgID, teamID) REFERENCES Appearances (yearID, playerID, lgID, teamID);
 
 ALTER TABLE HomeGames
 ADD CONSTRAINT `fk_HomeGames_Teams` FOREIGN KEY (`team.key`, `year.key`, `league.key`) REFERENCES Teams (teamID, yearID, lgID);
+
+SET foreign_key_checks = 1;
