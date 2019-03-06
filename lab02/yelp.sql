@@ -3,15 +3,19 @@
 --     where review_count = (select max(review_count) from user);
 
 -- user_id should be the primary key
-CREATE INDEX IX_user_name ON user(name);
+-- because name is being selected from user
+CREATE INDEX IX_user_name ON user(name); 
+-- because review_count is being selected from user
 CREATE INDEX IX_user_review_count ON user(review_count);
 
 -- (b) Which business has received the greatest number of reviews?
 -- select CONCAT(business_id, ": ", name) as business_receiving_greatest_number_of_reviews from business 
 --     where review_count = (select max(review_count) from business);
 
--- business_id should be the primary key
+-- business_id should be the primary key of business
+-- because name is being selected from business
 CREATE INDEX IX_business_name ON business(name);
+-- because review_count is being selected from business
 CREATE INDEX IX_business_review_count ON business(review_count);
 
 -- (c) What is the average number of reviews written by users?
@@ -32,6 +36,7 @@ CREATE INDEX IX_business_review_count ON business(review_count);
 --     a.user_id = b.user_id
 --     where ABS(a.direct_avg_stars - b.calculated_avg_stars) > 0.5;
 
+-- because average_stars is being selected from user
 CREATE INDEX IX_user_average_stars ON user(average_stars);
 
 -- (e) What fraction of users have written more than 10 reviews?
@@ -40,6 +45,7 @@ CREATE INDEX IX_user_average_stars ON user(average_stars);
 --     count(distinct user_id)) * 100 as fraction_of_users_have_written_more_than_10_reviews
 --     from user;
 
+-- because user.review_count is used in where
 CREATE INDEX IX_user_review_count ON user(review_count);
 
 -- (f) What is the average length of their reviews?

@@ -5,7 +5,8 @@
 -- select count(PlayerID) as players_having_unknow_birthdate from Master 
 -- where birthYear = 0 or birthMonth = 0 or birthDay = 0;
 
--- birthYear, birthMonth, birthDay are used in 'where'
+-- because birthYear, birthMonth, birthDay are used in 'where'
+-- creating them seperately since each of them are getting read
 CREATE INDEX IX_master_birthYear ON Master(birthYear);
 CREATE INDEX IX_master_birthMonth ON Master(birthMonth);
 CREATE INDEX IX_master_birthDay ON Master(birthDay);
@@ -20,8 +21,8 @@ CREATE INDEX IX_master_birthDay ON Master(birthDay);
 --     inner join Master as m  on h.playerID = m.playerID where m.deathYear = 0)
 -- ) as pplStillAlive;
 
--- HallOfFame.playerID is used in inner join
 -- Master.deathYear is used in where
+-- HallOfFame.playerID is used in inner join
 CREATE INDEX IX_master_deathYear ON Master(deathYear);
 CREATE INDEX IX_HallOfFame_playerID ON HallOfFame(playerID);
 
@@ -33,6 +34,9 @@ CREATE INDEX IX_HallOfFame_playerID ON HallOfFame(playerID);
 -- select CONCAT(a.nameGiven, a.nameLast) as most_paid_player from Master as a
 -- inner join r as b on a.playerID = b.playerID
 -- inner join maxSalary as ms on b.totalSalary = ms.s;
+
+-- playerID is used in the first create view.
+-- playerID is part of the primary key but not whole
 CREATE INDEX IX_Salaries_playerID ON Salaries(playerID);
 
 
@@ -77,5 +81,7 @@ CREATE INDEX IX_Salaries_playerID ON Salaries(playerID);
 -- select count(a.playerID) as number_of_players_who_are_both_good_batters_and_good_pitchers from above_avg_hr as a 
 -- inner join above_avg_sho as b on a.playerID = b.playerID;
 
+-- playerID is used in the many 'create view's.
+-- playerID is part of the primary key but not whole
 CREATE INDEX IX_Batting_playerID ON Batting(playerID);
 CREATE INDEX IX_Pitching_playerID ON Pitching(playerID);
