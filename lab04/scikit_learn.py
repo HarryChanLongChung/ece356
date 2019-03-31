@@ -1,47 +1,12 @@
 import os.path
 import sys
+import graphviz 
 
 from tqdm import tqdm
 from sklearn import tree
+from sklearn.model_selection import train_test_split
 
-def prune(input_list):
-    l = []
-
-    for e in input_list:
-        e = e.strip()
-        #if e != '' and e != ' ':
-        l.append(e)
-
-    return l
-
-def get_leagueid_switch():
-    switcher = {
-        "UA":1,
-        "AL":2,
-        "NL":3,
-        "PL":4,
-        "NA":5,
-        "AA":6,
-        "FL":7
-    }
-    return switcher
-
-def turn_string_to_sample(inputString):
-    elems = inputString.strip().split(',')
-    elems = prune(elems)
-    #elems = [int(x) for x in elems]
-    samples = []
-    leagueId_case = get_leagueid_switch()
-
-    for x in elems[1:]:
-        if x == "NULL" or x == "null" or x == "":
-            samples.append(-1)
-        elif not x.isdigit():
-            samples.append(leagueId_case.get(x, -1))
-        else:
-            samples.append(int(x))
-
-    return samples[0], samples[1:-1], samples[-1]
+import utility_help as hp
 
 def generate_sample_label(csvLocation):
     samples = []
@@ -51,7 +16,7 @@ def generate_sample_label(csvLocation):
     samples_csv.readline()
 
     for entry in samples_csv:
-        playerId, features, label = turn_string_to_sample(entry)
+        playerId, features, label = hp.turn_string_to_sample(entry)
 
         samples.append(features)
         labels.append(label)
@@ -59,20 +24,24 @@ def generate_sample_label(csvLocation):
     samples_csv.close
     return samples, labels
 
-def train_and_test_on_data(csvlocation):
+def train_and_test_on_data(csvlocation, classifier_type):
     dataset = generate_sample_label(csvlocation)
-    split = int(len(dataset[0]) * 0.8)
+    x_train, x_test, y_train, y_test = train_test_split(dataset[0], dataset[1], test_size=0.2)
 
     # training
-    clf = tree.DecisionTreeClassifier()
-    clf = clf.fit(dataset[0][0:split], dataset[1][0:split])
+    clf = tree.DecisionTreeClassifier(criterion=classifier_type)
+    clf = clf.fit(x_train, y_train)
+
+    dot_data = tree.export_graphviz(clf, out_file=None) 
+    graph = graphviz.Source(dot_data) 
+    graph.render("out/"+classifier_type+"_"+csvlocation) 
 
     cnt = 0
     correct = 0
     # predicting
-    for test_sample in dataset[0][split:]:
+    for test_sample in x_test:
         test_result = clf.predict([test_sample])
-        if test_result ==  dataset[1][split + cnt]:
+        if test_result ==  y_test[cnt]:
             correct += 1
         cnt += 1
     
@@ -81,18 +50,21 @@ def train_and_test_on_data(csvlocation):
 
     return accuracy
 
-def multiple_data_set(iteration, csv_locations):
-    accuracy = [0]*len(csv_locations)
+def multiple_data_set(iteration, classifier_type, csv_location):
+    accuracy = [0]*iteration
 
-    for _ in tqdm(range(iteration)):
-        for u in range(len(accuracy)):
-            accuracy[u] += train_and_test_on_data(csv_locations[u])
-    
-    for u in range(len(accuracy)):
-        print("Avg: ", accuracy[u]/iteration, "CSV: ", csv_locations[u])
+    for i in tqdm(range(iteration)):
+        accuracy[i] = train_and_test_on_data(csv_location, classifier_type)
+
+    print("Avg: ", sum(accuracy)/iteration, "CSV: ", csv_location)
 
 if __name__ == "__main__":
+    #python3 scikit_learn.py 5 gini data2_6.csv
+    
     i = int(sys.argv[1])
-    csv_locations = sys.argv[2:]
-    multiple_data_set(i, csv_locations)
+    multiple_data_set(iteration = i, classifier_type = sys.argv[2], csv_location = sys.argv[3])
+
+    # multiple_data_set(iteration = 5, csv_locations = ["data2_6.csv"])
+
+
 
