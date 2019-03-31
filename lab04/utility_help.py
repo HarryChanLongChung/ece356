@@ -1,3 +1,5 @@
+import os.path
+
 def prune(input_list):
     l = []
 
@@ -36,3 +38,32 @@ def get_leagueid_switch():
         "FL":7
     }
     return switcher
+
+def print_accuracy_csv(iteration, accuracy, clf_type):
+    out = open("out/g14_DT_"+clf_type+"_accuracy.csv", 'w')
+
+    content = "datasetNumber, Accuracy,\n"
+    i=0
+    if iteration == len(accuracy):
+        for ac in accuracy:
+            content += str(i) + ", " + str(ac) + ",\n"
+            i += 1
+
+        out.write(content)
+        out.close
+
+def print_precision_csv(iteration, classification, prediction, clf_type):
+    out = open("out/g14_DT_"+clf_type+"_precision.csv", 'a')
+
+    content = ""
+
+    if iteration == 0:
+        content = "iteration, classification, prediction\n"
+    for u in range(len(classification)):
+        content += str(iteration) + ", "
+        content += str(classification[u]) + ", "
+        content += str(prediction[u][0]) + ",\n"
+
+    out.write(content)
+    out.close
+
