@@ -49,8 +49,6 @@ def train_and_test_on_data(iteration, csvlocation, classifier_type):
     
     hp.print_precision_csv(iteration, y_test, predictions, classifier_type)
 
-    
-    
     accuracy = (correct/cnt)*100
     #print("Total: ", cnt, "Correct: ", correct, "Accuracy: ", accuracy)
 

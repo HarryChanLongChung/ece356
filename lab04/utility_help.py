@@ -1,5 +1,7 @@
 import os.path
 
+from sklearn.metrics import classification_report
+
 def prune(input_list):
     l = []
 
@@ -63,6 +65,9 @@ def print_precision_csv(iteration, classification, prediction, clf_type):
         content += str(iteration) + ", "
         content += str(classification[u]) + ", "
         content += str(prediction[u][0]) + ",\n"
+
+    labels = ['nominated', 'elected']
+    print(classification_report(classification, prediction, target_names=labels))
 
     out.write(content)
     out.close
