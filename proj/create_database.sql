@@ -10,12 +10,12 @@ drop table if exists User_post;
 drop table if exists FollowTag;
 
 create table Account(
-    account_ID int(11) AUTO_INCREMENT primary key,
-    account_Name varchar(100),
+    account_ID int(11) AUTO_INCREMENT primary key, 
+    account_Name varchar(100), 
     password varchar(100),
     firstName varchar(100),
-    lastName varchar(100),
-    sex varchar(100),
+    lastName varchar(100), 
+    sex varchar(100), 
     birthdate date
 );
 
@@ -39,14 +39,14 @@ create table Tag(
 
 create table User_post(
     post_ID int(11) AUTO_INCREMENT primary key, 
-    times timestamp,
+    post_timestamp timestamp DEFAULT CURRENT_TIMESTAMP,
     account_ID int(11),
     message varchar(100), 
-    thumbs int(11), 
-    is_read int(11)
+    thumbs int(11) DEFAULT 0, 
+    is_read int(11) DEFAULT 0
 );
 
 create table FollowTag(
     tag_ID int(11),
-    follower_ID int(11)
+    account_ID int(11)
 );

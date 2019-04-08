@@ -70,7 +70,7 @@ create procedure addPost(
     IN is_read int(11)
 )
 Begin
-insert into Post(times, account_ID, message, thumbs, is_read) values (times, account_ID, message, thumbs, is_read);
+insert into user_post(times, account_ID, message, thumbs, is_read) values (times, account_ID, message, thumbs, is_read);
 END@@
 DELIMITER ;
 

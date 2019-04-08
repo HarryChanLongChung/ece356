@@ -34,7 +34,6 @@ class PyMedia:
     # check if username exist
     self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
     valid_username = self.cursor.fetchall()
-    print(valid_username)
     if valid_username != [(0,)]:
       print("This username already exist. Please change a new username")
       self.register()
@@ -65,18 +64,15 @@ class PyMedia:
     print("Your are logged in. Do something.")
     print("Please enter a command, type \"help\" to see a list of commands.")
     command = input("Command: ")
-    print(command)
-    if command == 1:
-      print(command)
+    if command == "1":
       self.view_posts() # view specific post
-      print(command) 
-    elif command == 2:
+    elif command == "2":
       self.upvote() # upvote post
-    elif command == 3:
+    elif command == "3":
       self.downvote() # downvote post
-    elif command == 4:
+    elif command == "4":
       self.cursor.execute("SELECT * from User_group") # show all groups
-    elif command == 5:
+    elif command == "5":
       self.joinGroup(username) # join group
     elif command == "help":
       print('list of commands')
@@ -88,38 +84,45 @@ class PyMedia:
     self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name =\"%s\" " % username)
 
   def checkValid(self, table, column_id, check_id):
-    self.cursor.execute("select count(*) from %s where %s = %s" % (table, column_id, check_id))
+    check_id = int(check_id)
+    self.cursor.execute("select count(*) from `%s` where `%s` = %d " % (table, column_id, check_id))
     validCheck = self.cursor.fetchall()
-    print(validCheck)
     return validCheck
 
   def view_posts(self):
     postID = input("Enter the post ID you would like to view: ")
     validPost = self.checkValid("user_post", "post_ID", postID)
-    if validPost == 0:
+    if validPost == [(0,)]:
       print("That is an invalid postID")
     else:
-      self.cursor.execute("call viewPost(%s)", postID)
+      self.cursor.execute("select post_ID, message, thumbs, is_read from User_post where \"%s\" = User_post.post_ID;" % postID)
+      post_message = self.cursor.fetchall()
+      print("Post_ID: ", post_message[0][0])
+      print("Message: ", post_message[0][1])
+      print("Thumbs: ", post_message[0][2])
+      print("Is_read: ", post_message[0][3])
 
   def upvote(self):
     postID = input("Enter the post ID you would like to upvote: ")
-    validPost = self.cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
-    if validPost == 0:
+    validPost = self.checkValid("user_post", "post_ID", postID)
+    if validPost == [(0,)]:
       print("That is an invalid postID")
     else:
-      self.cursor.execute("call upvote(%s)", postID)
+      self.cursor.execute("UPDATE User_post SET thumbs = thumbs+1 WHERE \"%s\" = User_post.post_ID;" % postID)
+      self.dbconnection.commit()
 
   def downvote(self):
     postID = input("Enter the post ID you would like to downvote: ")
-    validPost = self.cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
-    if validPost == 0:
+    validPost = self.checkValid("user_post", "post_ID", postID)
+    if validPost == [(0,)]:
       print("That is an invalid post ID")
     else:
-      self.cursor.execute("call downvote(%s)" % postID)
+      self.cursor.execute("UPDATE User_post SET thumbs = thumbs-1 WHERE \"%s\" = User_post.post_ID;" % postID)
+      self.dbconnection.commit()
 
   def joinGroup(self, username):
     groupID = input("Enter the Group ID you would like to join: ")
-    validGroup = self.cursor.execute("call checkValidGroup(%s, @checkGroup)" % groupID)
+    validGroup = self.checkValid("user_group", "group_ID", groupID)
     if validGroup == 0:
       print("That is an invalid Group ID")
     else:
