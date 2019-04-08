@@ -1,139 +1,140 @@
 import mysql.connector
 
-# util funtions
-def executeScriptsFromFile(filename, cursor):
-    fd = open(filename, 'r')
-    sqlFile = fd.read()
-    fd.close()
-    sqlCommands = sqlFile.split(';')
-    for command in sqlCommands:
-        try_sql_cmd(cursor, command)
+class PyMedia:
+  
+  def __init__(self):
+    self.connect_db()
 
-def try_sql_cmd(cursor, cmd):
-  try:
-      cursor.execute(cmd)
-  except mysql.connector.Error as err:
-      print("SQL error: ", err)
+  def connect_db(self):
+    self.dbconnection = mysql.connector.connect(
+      host="localhost",
+      user="root",
+      password="wocao"
+    )
+    # cursor = mydb.cursor(buffered=True)
+    self.cursor = self.dbconnection.cursor()
+    self.cursor.execute("USE ECE356_project;")
+  
+  def login_or_register(self):
+    cmd1 = input("Please input command \"login\" or \"register\": ")
+    if cmd1 == "login":
+      self.login()
+    elif cmd1 == "register":
+      self.register()
+    elif cmd1 == "createDB":
+      self.executeScriptsFromFile("./create_database.sql")
+      self.login_or_register()
+    else:
+      print("Wrong command.")
+      self.login_or_register()
 
-# def startDB():
-#   mydb = mysql.connector.connect(
-#     host="localhost",
-#     user="root",
-#     password="wocao"
-#   )
+  def register(self):
+    print("Please choose your username and password.")
+    username = input("Username: ")
+    # check if username exist
+    valid_username = self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
+    if valid_username != None:
+      print("This username already exist. Please change a new username")
+      self.register()
+    # else
+    password = input("Password: ")
+    # register the acount
+    self.cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"%s\", \"%s\" );" % (username, password))
+    self.dbconnection.commit()
+    
+    print("Your account has been registered! Thanks!")
+    self.login_or_register()
 
-#   mycursor = mydb.cursor()
-#   executeScriptsFromFile("./create_database.sql", mycursor)
+  def login(self):
+    username = input("Username: ")
+    password = input("Password: ")
+    # check if password is correct
+    validUser = self.cursor.execute("call loginProcedure(\"%s\", \"%s\", @checkUser)", username, password)
+    if validUser: 
+      # user logged in, show posts
+      self.show_posts(username)
+      self.logged_in(username)
+    else:
+      print("Sorry, your username or password is wrong.")
+      self.login()
 
-def login_or_register(cursor):
-  cmd1 = input("Please input command \"login\" or \"register\": ")
-  if cmd1 == "login":
-    login(cursor)
-  elif cmd1 == "register":
-    register(cursor)
-  elif cmd1 == "createDB":
-    executeScriptsFromFile("./create_database.sql", cursor)
-    login_or_register(cursor)
-  else:
-    print("Wrong command.")
-    login_or_register(cursor)
+  def logged_in(self, username):
+    print("Your are logged in. Do something.")
+    print("Please enter a command, type \"help\" to see a list of commands.")
+    command = input("Command: ")
+    if command == 1:
+      self.view_posts() # view specific post 
+    elif command == 2:
+      self.upvote() # upvote post
+    elif command == 3:
+      self.downvote() # downvote post
+    elif command == 4:
+      self.cursor.execute("SELECT * from User_group") # show all groups
+    elif command == 5:
+      self.joinGroup(username) # join group
+    elif command == "help":
+      print('list of commands')
+    # else if
 
-def login(cursor):
-  username = input("Username: ")
-  password = input("Password: ")
-  # check if password is correct
-  validUser = cursor.execute("call loginProcedure(%s, %s, @checkUser)", username, password)
-  if validUser: 
-    # user logged in, show posts
-    show_posts(cursor, username)
-    logged_in(cursor, username)
-  else:
-    print("Sorry, your username or password is wrong.")
-    login(cursor)
+  def show_posts(self, username):
+    self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s" % username)
 
-def register(cursor):
-  print("Please choose your username and password.")
-  username = input("Username: ")
-  # check if username exist
-  valid_username = cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
-  if valid_username != None:
-    print("This username already exist. Please change a new username")
-    register(cursor)
-  # else
-  password = input("Password: ")
-  # register the acount
-  # cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"%s\", \"%s\" );" % (username, password))
-  cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"b\", \"b\" );")
-  print("Your account has been registered! Thanks!")
-  login_or_register(cursor)
+  def view_posts(self):
+    postID = input("Enter the post ID you would like to view: ")
+    validPost = self.cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+    if validPost == 0:
+      print("That is an invalid postID")
+    else:
+      self.cursor.execute("call viewPost(%s)", postID)
 
-def logged_in(cursor, username):
-  print("Your are logged in. Do something.")
-  print("Please enter a command, type \"help\" to see a list of commands.")
-  command = input("Command: ")
-  if command == 1:
-    view_post(cursor) # view specific post 
-  elif command == 2:
-    upvote(cursor) # upvote post
-  elif command == 3:
-    downvote(cursor) # downvote post
-  elif command == 4:
-    cursor.execute("SELECT * from User_group") # show all groups
-  elif command == 5:
-    joinGroup(cursor, username) # join group
-  elif command == "help":
-    print('list of commands')
-  # else if
+  def upvote(self):
+    postID = input("Enter the post ID you would like to upvote: ")
+    validPost = self.cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+    if validPost == 0:
+      print("That is an invalid postID")
+    else:
+      self.cursor.execute("call upvote(%s)", postID)
 
-def show_posts(cursor, username):
-  cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s" % username)
+  def downvote(self):
+    postID = input("Enter the post ID you would like to downvote: ")
+    validPost = self.cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+    if validPost == 0:
+      print("That is an invalid post ID")
+    else:
+      self.cursor.execute("call downvote(%s)" % postID)
 
-def view_posts(cursor):
-  postID = input("Enter the post ID you would like to view: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
-  if validPost == 0:
-    print("That is an invalid postID")
-  else:
-    cursor.execute("call viewPost(%s)", postID)
+  def joinGroup(self, username):
+    groupID = input("Enter the Group ID you would like to join: ")
+    validGroup = self.cursor.execute("call checkValidGroup(%s, @checkGroup)" % groupID)
+    if validGroup == 0:
+      print("That is an invalid Group ID")
+    else:
+      self.cursor.execute("call joinGroup(%s, %s)" % (groupID, username))
 
-def upvote(cursor):
-  postID = input("Enter the post ID you would like to upvote: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
-  if validPost == 0:
-    print("That is an invalid postID")
-  else:
-    cursor.execute("call upvote(%s)", postID)
+  # util funtions
+  def executeScriptsFromFile(self, filename):
+      fd = open(filename, 'r')
+      sqlFile = fd.read()
+      fd.close()
+      sqlCommands = sqlFile.split(';')
+      for command in sqlCommands:
+          self.try_sql_cmd(command)
 
-def downvote(cursor):
-  postID = input("Enter the post ID you would like to downvote: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
-  if validPost == 0:
-    print("That is an invalid post ID")
-  else:
-    cursor.execute("call downvote(%s)" % postID)
+  def try_sql_cmd(self, cmd):
+    try:
+        self.cursor.execute(cmd)
+    except mysql.connector.Error as err:
+        print("SQL error: ", err)
+  
+  def start_app(self):
+    self.connect_db()
+    print("Welcome!")
+    self.login_or_register()
+    
 
-def joinGroup(cursor, username):
-  groupID = input("Enter the Group ID you would like to join: ")
-  validGroup = cursor.execute("call checkValidGroup(%s, @checkGroup)" % groupID)
-  if validGroup == 0:
-    print("That is an invalid Group ID")
-  else:
-    cursor.execute("call joinGroup(%s, %s)" % (groupID, username))
-
-def funcname(self, parameter_list):
-  pass
-
+# main method
 if __name__ == "__main__":
-
-  mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="wocao"
-  )
-  cursor = mydb.cursor()
-  cursor.execute("USE ECE356_project;")
-
-  print("Welcome!")
-  login_or_register(cursor)
+  app = PyMedia()
+  app.start_app()
 
 
