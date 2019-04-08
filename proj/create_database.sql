@@ -11,11 +11,11 @@ drop table if exists FollowTag;
 
 create table Account(
     account_ID int(11) AUTO_INCREMENT primary key,
-    password varchar(100), 
-    account_Name varchar(100), 
+    account_Name varchar(100),
+    password varchar(100),
     firstName varchar(100),
-    lastName varchar(100), 
-    sex varchar(100), 
+    lastName varchar(100),
+    sex varchar(100),
     birthdate date
 );
 
@@ -50,4 +50,3 @@ create table FollowTag(
     tag_ID int(11),
     follower_ID int(11)
 );
-

@@ -56,15 +56,14 @@ def register(cursor):
   username = input("Username: ")
   # check if username exist
   valid_username = cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
-  print(valid_username) # debug
-  print(type(valid_username)) # debug
   if valid_username != None:
     print("This username already exist. Please change a new username")
     register(cursor)
   # else
   password = input("Password: ")
   # register the acount
-  cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"%s\", \"%s\" );" % (username, password))
+  # cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"%s\", \"%s\" );" % (username, password))
+  cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"b\", \"b\" );")
   print("Your account has been registered! Thanks!")
   login_or_register(cursor)
 
@@ -74,49 +73,51 @@ def logged_in(cursor, username):
   command = input("Command: ")
   if command == 1:
     view_post(cursor) # view specific post 
-  else if command == 2:
+  elif command == 2:
     upvote(cursor) # upvote post
-  else if command == 3:
+  elif command == 3:
     downvote(cursor) # downvote post
-  else if command == 4:
+  elif command == 4:
     cursor.execute("SELECT * from User_group") # show all groups
-  else if command == 5:
+  elif command == 5:
     joinGroup(cursor, username) # join group
+  elif command == "help":
+    print('list of commands')
   # else if
 
 def show_posts(cursor, username):
-  cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s", username)
+  cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s" % username)
 
 def view_posts(cursor):
   postID = input("Enter the post ID you would like to view: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID)
-  if validPost = 0:
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+  if validPost == 0:
     print("That is an invalid postID")
-  else
+  else:
     cursor.execute("call viewPost(%s)", postID)
 
 def upvote(cursor):
   postID = input("Enter the post ID you would like to upvote: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID)
-  if validPost = 0:
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+  if validPost == 0:
     print("That is an invalid postID")
-  else
+  else:
     cursor.execute("call upvote(%s)", postID)
 
 def downvote(cursor):
   postID = input("Enter the post ID you would like to downvote: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID)
-  if validPost = 0:
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+  if validPost == 0:
     print("That is an invalid post ID")
-  else
-    cursor.execute("call downvote(%s)", postID)
+  else:
+    cursor.execute("call downvote(%s)" % postID)
 
 def joinGroup(cursor, username):
   groupID = input("Enter the Group ID you would like to join: ")
   validGroup = cursor.execute("call checkValidGroup(%s, @checkGroup)" % groupID)
-  if validGroup = 0:
+  if validGroup == 0:
     print("That is an invalid Group ID")
-  else
+  else:
     cursor.execute("call joinGroup(%s, %s)" % (groupID, username))
 
 def funcname(self, parameter_list):
