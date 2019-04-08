@@ -78,46 +78,38 @@ def logged_in(cursor):
     upvote(cursor) # upvote post
   else if command == 3:
     downvote(cursor) # downvote post
-  else if command == 4;
+  else if command == 4:
     cursor.execute("SELECT * from User_group") # show all groups
-  else if command == 5;
+  else if command == 5:
     joinGroup(cursor) # join group
   # else if
 
 def show_posts(cursor, username):
-  cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s", username);
+  cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s", username)
 
 def view_posts(cursor):
   postID = input("Enter the post ID you would like to view: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID)
   if validPost = 0:
     print("That is an invalid postID")
   else
-    cursor.execute("call viewPost(%s)", postID);
+    cursor.execute("call viewPost(%s)", postID)
 
 def upvote(cursor):
   postID = input("Enter the post ID you would like to upvote: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID)
   if validPost = 0:
     print("That is an invalid postID")
   else
-    cursor.execute("call upvote(%s)", postID);
+    cursor.execute("call upvote(%s)", postID)
 
 def downvote(cursor):
   postID = input("Enter the post ID you would like to downvote: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID)
   if validPost = 0:
     print("That is an invalid post ID")
   else
-    cursor.execute("call downvote(%s)", postID);
-
-def downvote(cursor):
-  postID = input("Enter the Group ID you would like to join: ")
-  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
-  if validPost = 0:
-    print("That is an invalid post ID")
-  else
-    cursor.execute("call downvote(%s)", postID);
+    cursor.execute("call downvote(%s)", postID)
 
 def funcname(self, parameter_list):
   pass
