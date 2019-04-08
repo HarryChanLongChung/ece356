@@ -9,10 +9,10 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="wocao"
+      password="root"
     )
-    # cursor = mydb.cursor(buffered=True)
-    self.cursor = self.dbconnection.cursor()
+    self.cursor = self.dbconnection.cursor(buffered=True)
+    # self.cursor = self.dbconnection.cursor()
     self.cursor.execute("USE ECE356_project;")
   
   def login_or_register(self):
@@ -32,8 +32,10 @@ class PyMedia:
     print("Please choose your username and password.")
     username = input("Username: ")
     # check if username exist
-    valid_username = self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
-    if valid_username != None:
+    self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
+    valid_username = self.cursor.fetchall()
+    print(valid_username)
+    if valid_username != [(0,)]:
       print("This username already exist. Please change a new username")
       self.register()
     # else
@@ -49,8 +51,9 @@ class PyMedia:
     username = input("Username: ")
     password = input("Password: ")
     # check if password is correct
-    validUser = self.cursor.execute("call loginProcedure(\"%s\", \"%s\", @checkUser)", username, password)
-    if validUser: 
+    self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\" and password = \"%s\";" % (username, password))
+    validUser = self.cursor.fetchall()
+    if validUser != [(0,)]: 
       # user logged in, show posts
       self.show_posts(username)
       self.logged_in(username)
@@ -62,8 +65,11 @@ class PyMedia:
     print("Your are logged in. Do something.")
     print("Please enter a command, type \"help\" to see a list of commands.")
     command = input("Command: ")
+    print(command)
     if command == 1:
-      self.view_posts() # view specific post 
+      print(command)
+      self.view_posts() # view specific post
+      print(command) 
     elif command == 2:
       self.upvote() # upvote post
     elif command == 3:
@@ -74,14 +80,22 @@ class PyMedia:
       self.joinGroup(username) # join group
     elif command == "help":
       print('list of commands')
+    else:
+      self.logged_in(username)
     # else if
 
   def show_posts(self, username):
-    self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s" % username)
+    self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name =\"%s\" " % username)
+
+  def checkValid(self, table, column_id, check_id):
+    self.cursor.execute("select count(*) from %s where %s = %s" % (table, column_id, check_id))
+    validCheck = self.cursor.fetchall()
+    print(validCheck)
+    return validCheck
 
   def view_posts(self):
     postID = input("Enter the post ID you would like to view: ")
-    validPost = self.cursor.execute("call checkValidPost(%s, @checkPost)" % postID)
+    validPost = self.checkValid("user_post", "post_ID", postID)
     if validPost == 0:
       print("That is an invalid postID")
     else:
