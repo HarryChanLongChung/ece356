@@ -46,7 +46,7 @@ def login(cursor):
   if validUser: 
     # user logged in, show posts
     show_posts(cursor, username)
-    logged_in(cursor)
+    logged_in(cursor, username)
   else:
     print("Sorry, your username or password is wrong.")
     login(cursor)
@@ -68,7 +68,7 @@ def register(cursor):
   print("Your account has been registered! Thanks!")
   login_or_register(cursor)
 
-def logged_in(cursor):
+def logged_in(cursor, username):
   print("Your are logged in. Do something.")
   print("Please enter a command, type \"help\" to see a list of commands.")
   command = input("Command: ")
@@ -81,7 +81,7 @@ def logged_in(cursor):
   else if command == 4:
     cursor.execute("SELECT * from User_group") # show all groups
   else if command == 5:
-    joinGroup(cursor) # join group
+    joinGroup(cursor, username) # join group
   # else if
 
 def show_posts(cursor, username):
@@ -110,6 +110,14 @@ def downvote(cursor):
     print("That is an invalid post ID")
   else
     cursor.execute("call downvote(%s)", postID)
+
+def joinGroup(cursor, username):
+  groupID = input("Enter the Group ID you would like to join: ")
+  validGroup = cursor.execute("call checkValidGroup(%s, @checkGroup)" % groupID)
+  if validGroup = 0:
+    print("That is an invalid Group ID")
+  else
+    cursor.execute("call joinGroup(%s, %s)" % (groupID, username))
 
 def funcname(self, parameter_list):
   pass
