@@ -58,13 +58,13 @@ def register(cursor):
   valid_username = cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
   print(valid_username) # debug
   print(type(valid_username)) # debug
-  if valid_username == 0:
+  if valid_username != None:
     print("This username already exist. Please change a new username")
     register(cursor)
   # else
   password = input("Password: ")
   # register the acount
-  cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( %s, %s );" % (username, password))
+  cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"%s\", \"%s\" );" % (username, password))
   print("Your account has been registered! Thanks!")
   login_or_register(cursor)
 
