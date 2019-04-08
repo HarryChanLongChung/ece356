@@ -123,10 +123,11 @@ class PyMedia:
   def joinGroup(self, username):
     groupID = input("Enter the Group ID you would like to join: ")
     validGroup = self.checkValid("user_group", "group_ID", groupID)
-    if validGroup == 0:
+    if validGroup == [(0,)]:
       print("That is an invalid Group ID")
     else:
-      self.cursor.execute("call joinGroup(%s, %s)" % (groupID, username))
+      self.cursor.execute("INSERT INTO Group_members ( group_ID, account_ID ) VALUES ( \"%s\", \"%s\" );" % (groupID, password))
+      self.dbconnection.commit()
 
   # util funtions
   def executeScriptsFromFile(self, filename):

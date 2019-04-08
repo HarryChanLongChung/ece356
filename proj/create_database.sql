@@ -8,6 +8,7 @@ drop table if exists Follower;
 drop table if exists Tag;
 drop table if exists User_post;
 drop table if exists FollowTag;
+drop table if exists Group_members;
 
 create table Account(
     account_ID int(11) AUTO_INCREMENT primary key, 
@@ -20,10 +21,9 @@ create table Account(
 );
 
 create table User_group(
-    group_ID int(11), 
+    group_ID int(11) AUTO_INCREMENT primary key, 
     group_Name varchar(100), 
-    description varchar(100),
-    account_ID int(11)
+    description varchar(100)
 );
 
 create table Follower(
@@ -48,5 +48,10 @@ create table User_post(
 
 create table FollowTag(
     tag_ID int(11),
+    account_ID int(11)
+);
+
+create table Group_members(
+    group_ID int(11),
     account_ID int(11)
 );
