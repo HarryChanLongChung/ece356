@@ -79,7 +79,9 @@ def logged_in(cursor):
   else if command == 3:
     downvote(cursor) # downvote post
   else if command == 4;
-    cursor.execute("SELECT * from User_group")
+    cursor.execute("SELECT * from User_group") # show all groups
+  else if command == 5;
+    joinGroup(cursor) # join group
   # else if
 
 def show_posts(cursor, username):
@@ -103,6 +105,14 @@ def upvote(cursor):
 
 def downvote(cursor):
   postID = input("Enter the post ID you would like to downvote: ")
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  if validPost = 0:
+    print("That is an invalid post ID")
+  else
+    cursor.execute("call downvote(%s)", postID);
+
+def downvote(cursor):
+  postID = input("Enter the Group ID you would like to join: ")
   validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
   if validPost = 0:
     print("That is an invalid post ID")
