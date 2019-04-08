@@ -38,11 +38,11 @@ def login_or_register(cursor):
 def login(cursor):
   username = input("Username: ")
   password = input("Password: ")
-  # TODO for George
   # check if password is correct
-  if true: 
+  validUser = cursor.execute("call loginProcedure(%s, %s, @checkUser)", username, password)
+  if validUser: 
     # user logged in, show posts
-    show_posts(cursor)
+    show_posts(cursor, username)
     logged_in(cursor)
   else:
     print("Sorry, your username or password is wrong.")
@@ -68,9 +68,8 @@ def register(cursor):
 def logged_in(cursor):
   print("Your are logged in. Do something.")
 
-def show_posts(cursor):
-  posts = cursor.execute("SELECT * FROM User_post where xxx", username)
-  #TODO for Geroge
+def show_posts(cursor, username):
+  posts = cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s", username);
 
 def funcname(self, parameter_list):
   pass
