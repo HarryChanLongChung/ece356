@@ -9,7 +9,7 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="root"
+      password="wocao"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
     # self.cursor = self.dbconnection.cursor()
@@ -17,9 +17,9 @@ class PyMedia:
   
   def login_or_register(self):
     cmd1 = input("Please input command \"login\" or \"register\": ")
-    if cmd1 == "login":
+    if cmd1 == "login" or cmd1 == "lg":
       self.login()
-    elif cmd1 == "register":
+    elif cmd1 == "register" or cmd1 == "rg":
       self.register()
     elif cmd1 == "createDB":
       self.executeScriptsFromFile("./create_database.sql")
@@ -50,17 +50,19 @@ class PyMedia:
     username = input("Username: ")
     password = input("Password: ")
     # check if password is correct
-    self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\" and password = \"%s\";" % (username, password))
-    validUser = self.cursor.fetchall()
-    if validUser != [(0,)]: 
-      # user logged in, show posts
+    self.cursor.execute("SELECT count(*), account_ID FROM Account where account_Name = \"%s\" and password = \"%s\";" % (username, password))
+    cursor_fetch_result = self.cursor.fetchall()
+    if cursor_fetch_result[0][0] != 0: 
+      # user logged in, get the autoincrement ID
+      user_info = { "id": cursor_fetch_result[0][1], "name": username }
+      # show posts
       self.show_posts(username)
-      self.logged_in(username)
+      self.logged_in(user_info)
     else:
       print("Sorry, your username or password is wrong.")
       self.login()
 
-  def logged_in(self, username):
+  def logged_in(self, user_info):
     print("Your are logged in. Do something.")
     print("Please enter a command, type \"help\" to see a list of commands.")
     command = input("Command: ")
@@ -73,11 +75,13 @@ class PyMedia:
     elif command == "4":
       self.cursor.execute("SELECT * from User_group") # show all groups
     elif command == "5":
-      self.joinGroup(username) # join group
+      self.joinGroup(user_info) # join group
+    elif command == "create_post" or command == "cp":
+      self.create_post(user_info) # join group
     elif command == "help":
       print('list of commands')
     else:
-      self.logged_in(username)
+      self.logged_in(user_info)
     # else if
 
   def show_posts(self, username):
@@ -128,6 +132,14 @@ class PyMedia:
     else:
       self.cursor.execute("INSERT INTO Group_members ( group_ID, account_ID ) VALUES ( \"%s\", \"%s\" );" % (groupID, password))
       self.dbconnection.commit()
+
+  def create_post(self, user_info):
+    post_content = input("What content would you like to post? ")
+    create_post_query = "insert into User_post(account_ID, message, thumbs, is_read) values (%s, '%s', %s, %s);"
+    create_post_query = create_post_query % (user_info["id"], post_content, 0, 0)
+    self.cursor.execute(create_post_query)
+    self.dbconnection.commit()
+    print("You have successfully created a post!")
 
   # util funtions
   def executeScriptsFromFile(self, filename):
