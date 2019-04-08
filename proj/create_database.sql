@@ -163,59 +163,59 @@ create table FollowTag(
 -- call loginProcedure("bob", "123", @checkUser);
 
 -- chehck for dupliate account names
-drop procedure if exists checkDuplicateAccount;
+-- drop procedure if exists checkDuplicateAccount;
 
-DELIMITER @@
-create procedure checkDuplicateAccount(
-    IN account_Name varchar(100),
-    OUT checkUser int(11)
-)
-Begin
-SET checkUser := 0;
-SET checkUser := (select count(*) from Account where account_Name = Account.account_Name);
-select checkUser;
-END@@
-DELIMITER ;
+-- DELIMITER @@
+-- create procedure checkDuplicateAccount(
+--     IN account_Name varchar(100),
+--     OUT checkUser int(11)
+-- )
+-- Begin
+-- SET checkUser := 0;
+-- SET checkUser := (select count(*) from Account where account_Name = Account.account_Name);
+-- select checkUser;
+-- END@@
+-- DELIMITER ;
 
--- call checkDuplicateAccount("bob", @checkUser);
+-- -- call checkDuplicateAccount("bob", @checkUser);
 
 
--- users view posts
-drop procedure if exists viewPost;
+-- -- users view posts
+-- drop procedure if exists viewPost;
 
-DELIMITER @@
-create procedure viewPost(
-    IN post_ID int(11),
-    OUT checkPost int(11)
-)
-Begin
-SET checkPost := 0;
-SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
-IF checkPost = 1 THEN
-select post_ID, message, thumbs, is_read from User_post where post_ID = User_post.post_ID;
-END IF;
-select checkPost;
-END@@
-DELIMITER ;
+-- DELIMITER @@
+-- create procedure viewPost(
+--     IN post_ID int(11),
+--     OUT checkPost int(11)
+-- )
+-- Begin
+-- SET checkPost := 0;
+-- SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
+-- IF checkPost = 1 THEN
+-- select post_ID, message, thumbs, is_read from User_post where post_ID = User_post.post_ID;
+-- END IF;
+-- select checkPost;
+-- END@@
+-- DELIMITER ;
 
--- call viewPost(1, @checkPost);
+-- -- call viewPost(1, @checkPost);
 
--- upvote procedure
-drop procedure if exists upvote;
+-- -- upvote procedure
+-- drop procedure if exists upvote;
 
-DELIMITER @@
-create procedure upvote(
-    IN post_ID int(11),
-    OUT checkPost int(11)
-)
-Begin
-SET checkPost := 0;
-SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
-IF checkPost = 1 THEN
-UPDATE User_post SET thumbs = thumbs+1 WHERE post_ID = User_post.post_ID;
-END IF;
-select checkPost;
-END@@
-DELIMITER ;
+-- DELIMITER @@
+-- create procedure upvote(
+--     IN post_ID int(11),
+--     OUT checkPost int(11)
+-- )
+-- Begin
+-- SET checkPost := 0;
+-- SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
+-- IF checkPost = 1 THEN
+-- UPDATE User_post SET thumbs = thumbs+1 WHERE post_ID = User_post.post_ID;
+-- END IF;
+-- select checkPost;
+-- END@@
+-- DELIMITER ;
 
 -- call upvote(1, @checkPost);

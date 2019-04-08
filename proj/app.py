@@ -15,22 +15,25 @@ def try_sql_cmd(cursor, cmd):
   except mysql.connector.Error as err:
       print("SQL error: ", err)
 
-def startDB():
-  mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="wocao"
-  )
+# def startDB():
+#   mydb = mysql.connector.connect(
+#     host="localhost",
+#     user="root",
+#     password="wocao"
+#   )
 
-  mycursor = mydb.cursor()
-  executeScriptsFromFile("./create_database.sql", mycursor)
+#   mycursor = mydb.cursor()
+#   executeScriptsFromFile("./create_database.sql", mycursor)
 
 def login_or_register(cursor):
-  cmd1 = input("Please input command \"login\" or \"register\"")
+  cmd1 = input("Please input command \"login\" or \"register\": ")
   if cmd1 == "login":
     login(cursor)
   elif cmd1 == "register":
     register(cursor)
+  elif cmd1 == "createDB":
+    executeScriptsFromFile("./create_database.sql", cursor)
+    login_or_register(cursor)
   else:
     print("Wrong command.")
     login_or_register(cursor)
@@ -52,7 +55,7 @@ def register(cursor):
   print("Please choose your username and password.")
   username = input("Username: ")
   # check if username exist
-  valid_username = cursor.execute("SELECT count(*) FROM Account where account_Name = %s;", username)
+  valid_username = cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
   print(valid_username) # debug
   print(type(valid_username)) # debug
   if valid_username == 0:
@@ -61,13 +64,12 @@ def register(cursor):
   # else
   password = input("Password: ")
   # register the acount
-  cursor.execute("INSERT INTO Account ( account_Name,  ) VALUES ( value1, value2,...valueN );")
+  cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( %s, %s );" % (username, password))
   print("Your account has been registered! Thanks!")
   login_or_register(cursor)
 
 def logged_in(cursor):
   print("Your are logged in. Do something.")
-
 def show_posts(cursor):
   posts = cursor.execute("SELECT * FROM User_post where xxx", username)
   #TODO for Geroge
@@ -82,8 +84,8 @@ if __name__ == "__main__":
     user="root",
     password="wocao"
   )
-
   cursor = mydb.cursor()
+  cursor.execute("USE ECE356_project;")
 
   print("Welcome!")
   login_or_register(cursor)
