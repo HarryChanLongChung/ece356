@@ -70,9 +70,44 @@ def register(cursor):
 
 def logged_in(cursor):
   print("Your are logged in. Do something.")
+  print("Please enter a command, type \"help\" to see a list of commands.")
+  command = input("Command: ")
+  if command == 1:
+    view_post(cursor) # view specific post 
+  else if command == 2:
+    upvote(cursor) # upvote post
+  else if command == 3:
+    downvote(cursor) # downvote post
+  else if command == 4;
+    cursor.execute("SELECT * from User_group")
+  # else if
 
 def show_posts(cursor, username):
-  posts = cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s", username);
+  cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name = %s", username);
+
+def view_posts(cursor):
+  postID = input("Enter the post ID you would like to view: ")
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  if validPost = 0:
+    print("That is an invalid postID")
+  else
+    cursor.execute("call viewPost(%s)", postID);
+
+def upvote(cursor):
+  postID = input("Enter the post ID you would like to upvote: ")
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  if validPost = 0:
+    print("That is an invalid postID")
+  else
+    cursor.execute("call upvote(%s)", postID);
+
+def downvote(cursor):
+  postID = input("Enter the post ID you would like to downvote: ")
+  validPost = cursor.execute("call checkValidPost(%s, @checkPost)", postID);
+  if validPost = 0:
+    print("That is an invalid post ID")
+  else
+    cursor.execute("call downvote(%s)", postID);
 
 def funcname(self, parameter_list):
   pass

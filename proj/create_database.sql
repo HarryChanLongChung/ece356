@@ -185,16 +185,10 @@ create table FollowTag(
 
 -- DELIMITER @@
 -- create procedure viewPost(
---     IN post_ID int(11),
---     OUT checkPost int(11)
+--     IN post_ID int(11)
 -- )
 -- Begin
--- SET checkPost := 0;
--- SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
--- IF checkPost = 1 THEN
 -- select post_ID, message, thumbs, is_read from User_post where post_ID = User_post.post_ID;
--- END IF;
--- select checkPost;
 -- END@@
 -- DELIMITER ;
 
@@ -205,17 +199,39 @@ create table FollowTag(
 
 -- DELIMITER @@
 -- create procedure upvote(
---     IN post_ID int(11),
---     OUT checkPost int(11)
+--     IN post_ID int(11)
 -- )
 -- Begin
--- SET checkPost := 0;
--- SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
--- IF checkPost = 1 THEN
 -- UPDATE User_post SET thumbs = thumbs+1 WHERE post_ID = User_post.post_ID;
--- END IF;
--- select checkPost;
 -- END@@
 -- DELIMITER ;
 
 -- call upvote(1, @checkPost);
+
+-- check valid Post
+drop procedure if exists checkValidPost;
+
+DELIMITER @@
+create procedure checkValidPost(
+    IN post_ID int(11),
+    OUT checkPost int(11)
+)
+Begin
+SET checkPost := 0;
+SET checkPost := (select count(*) from User_post where post_ID = User_post.post_ID);
+select checkPost;
+END@@
+DELIMITER ;
+
+
+-- downvote procedure
+drop procedure if exists downvote;
+
+DELIMITER @@
+create procedure downvote(
+    IN post_ID int(11)
+)
+Begin
+UPDATE User_post SET thumbs = thumbs-1 WHERE post_ID = User_post.post_ID;
+END@@
+DELIMITER ;
