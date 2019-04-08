@@ -10,7 +10,8 @@ drop table if exists User_post;
 drop table if exists FollowTag;
 
 create table Account(
-    account_ID int(11) AUTO_INCREMENT primary key, 
+    account_ID int(11) AUTO_INCREMENT primary key,
+    password varchar(100), 
     account_Name varchar(100), 
     firstName varchar(100),
     lastName varchar(100), 
@@ -56,16 +57,20 @@ create table FollowTag(
 -- drop procedure if exists addAccount;
 
 -- DELIMITER @@
--- create procedure addAccount(IN account_Name varchar(100), 
+-- create procedure addAccount(
+--     IN account_Name varchar(100),
+--     IN password varchar(100),
 --     IN firstName varchar(100),
 --     IN lastName varchar(100), 
 --     IN sex varchar(100), 
 --     IN birthdate date
 -- )
 -- Begin
--- insert into Account(account_Name, firstName, lastName, sex, birthdate) values (account_Name, firstName, lastName, sex, birthdate);
+-- insert into Account(account_Name, password, firstName, lastName, sex, birthdate) values (account_Name, password, firstName, lastName, sex, birthdate);
 -- END@@
 -- DELIMITER ;
+
+-- call addAccount("bob", "123", "jackie", "sun", "?", 11/11/1111);
 
 -- -- addGroup procedure
 -- drop procedure if exists addGroup;
@@ -135,3 +140,21 @@ create table FollowTag(
 -- insert into FollowTag(tag_ID, follower_ID) values (tag_ID, follower_ID);
 -- END@@
 -- DELIMITER ;
+
+-- --login procedure
+-- drop procedure if exists loginProcedure;
+
+-- DELIMITER @@
+-- create procedure loginProcedure(
+--     IN account_Name varchar(100),
+--     IN password varchar(100),
+--     OUT checkUser int(11)
+-- )
+-- Begin
+-- SET checkUser := 0;
+-- SET checkUser := (select count(*) from Account where account_Name = Account.account_Name and password = Account.password);
+-- select checkUser;
+-- END@@
+-- DELIMITER ;
+
+-- call loginProcedure("bob", "123", @checkUser);
