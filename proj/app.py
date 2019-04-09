@@ -16,7 +16,7 @@ class PyMedia:
     self.cursor.execute("USE ECE356_project;")
   
   def login_or_register(self):
-    cmd1 = input("Please input command \"login\" or \"register\": ")
+    cmd1 = input("Please input command 'login' or 'register': ")
     if cmd1 == "login" or cmd1 == "lg":
       self.login()
     elif cmd1 == "register" or cmd1 == "rg":
@@ -32,7 +32,7 @@ class PyMedia:
     print("Please choose your username and password.")
     username = input("Username: ")
     # check if username exist
-    self.cursor.execute("SELECT count(*) FROM Account where account_Name = \"%s\";" % username)
+    self.cursor.execute("SELECT count(*) FROM Account where account_Name = '%s';" % username)
     valid_username = self.cursor.fetchall()
     if valid_username != [(0,)]:
       print("This username already exist. Please change a new username")
@@ -40,7 +40,7 @@ class PyMedia:
     # else
     password = input("Password: ")
     # register the acount
-    self.cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( \"%s\", \"%s\" );" % (username, password))
+    self.cursor.execute("INSERT INTO Account ( account_Name, password ) VALUES ( '%s', '%s' );" % (username, password))
     self.dbconnection.commit()
     
     print("Your account has been registered! Thanks!")
@@ -50,7 +50,7 @@ class PyMedia:
     username = input("Username: ")
     password = input("Password: ")
     # check if password is correct
-    self.cursor.execute("SELECT count(*), account_ID FROM Account where account_Name = \"%s\" and password = \"%s\";" % (username, password))
+    self.cursor.execute("SELECT count(*), account_ID FROM Account where account_Name = '%s' and password = '%s';" % (username, password))
     cursor_fetch_result = self.cursor.fetchall()
     if cursor_fetch_result[0][0] != 0: 
       # user logged in, get the autoincrement ID
@@ -64,7 +64,7 @@ class PyMedia:
 
   def logged_in(self, user_info):
     print("Your are logged in. Do something.")
-    print("Please enter a command, type \"help\" to see a list of commands.")
+    print("Please enter a command, type 'help' to see a list of commands.")
     command = input("Command: ")
     if command == "1":
       self.view_posts() # view specific post
@@ -97,7 +97,7 @@ class PyMedia:
     # else if
 
   def show_posts(self, username):
-    self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name =\"%s\" " % username)
+    self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name ='%s' " % username)
 
   def checkValid(self, table, column_id, check_id):
     check_id = int(check_id)
@@ -111,7 +111,7 @@ class PyMedia:
     if validPost == [(0,)]:
       print("That is an invalid postID")
     else:
-      self.cursor.execute("select post_ID, message, thumbs, is_read from User_post where \"%s\" = User_post.post_ID;" % postID)
+      self.cursor.execute("select post_ID, message, thumbs, is_read from User_post where '%s' = User_post.post_ID;" % postID)
       post_message = self.cursor.fetchall()
       print("Post_ID: ", post_message[0][0])
       print("Message: ", post_message[0][1])
@@ -124,7 +124,7 @@ class PyMedia:
     if validPost == [(0,)]:
       print("That is an invalid postID")
     else:
-      self.cursor.execute("UPDATE User_post SET thumbs = thumbs+1 WHERE \"%s\" = User_post.post_ID;" % postID)
+      self.cursor.execute("UPDATE User_post SET thumbs = thumbs+1 WHERE '%s' = User_post.post_ID;" % postID)
       self.dbconnection.commit()
       print("Success!")
 
@@ -134,7 +134,7 @@ class PyMedia:
     if validPost == [(0,)]:
       print("That is an invalid post ID")
     else:
-      self.cursor.execute("UPDATE User_post SET thumbs = thumbs-1 WHERE \"%s\" = User_post.post_ID;" % postID)
+      self.cursor.execute("UPDATE User_post SET thumbs = thumbs-1 WHERE '%s' = User_post.post_ID;" % postID)
       self.dbconnection.commit()
       print("Success!")
 
@@ -180,8 +180,18 @@ class PyMedia:
     create_post_query = "insert into User_post(account_ID, message, thumbs, is_read) values (%s, '%s', %s, %s);"
     create_post_query = create_post_query % (user_info["id"], post_content, 0, 0)
     self.cursor.execute(create_post_query)
+    post_id = self.cursor.lastrowid
+
+    post_tags = input("What tags do you want to put? Seperate your tags with space. ")
+    post_tags = post_tags.split()
+    for post_tag in post_tags:
+      create_tag_query = "insert into Tag(tag_name, post_ID) values ('%s', %s);"
+      create_tag_query = create_tag_query % (post_tag, post_id)
+      self.cursor.execute(create_tag_query)
+
     self.dbconnection.commit()
     print("You have successfully created a post!")
+    self.logged_in(user_info)
 
   # util funtions
   def executeScriptsFromFile(self, filename):
