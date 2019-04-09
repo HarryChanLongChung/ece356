@@ -127,12 +127,10 @@ class PyMedia:
       follow_posts_query = follow_posts_query % user_info["id"]
       self.cursor.execute(follow_posts_query)
       follow_posts_query_result = self.cursor.fetchall()
-      print("follow_posts_query_result")
-      print(follow_posts_query_result)
 
-      filtered_tag_posts = filter(lambda x: x[0] > user_info["lastLoginTime"], tag_posts_query_result)
+      filtered_tag_posts = list(filter(lambda x: x[0] > user_info["lastLoginTime"], tag_posts_query_result))
       print("Posts from tags you have followed: ")
-      if len(list(filtered_tag_posts)) == 0:
+      if len(filtered_tag_posts) == 0:
         print("No new post.")
       for row in filtered_tag_posts:
         self.cursor.execute("select post_ID, message, thumbs, is_read from User_post where '%s' = User_post.post_ID;" % row[1])
@@ -141,12 +139,13 @@ class PyMedia:
         print("Message: ", tag_post_message[0][1])
         print("Thumbs: ", tag_post_message[0][2])
         print("Is_read: ", tag_post_message[0][3])
+        print("\n")
         self.cursor.execute("UPDATE User_post SET is_read = 1 WHERE '%s' = User_post.post_ID;" % row[1])
         self.dbconnection.commit()
       
-      filtered_follow_posts = filter(lambda x: x[0] > user_info["lastLoginTime"], follow_posts_query_result)
+      filtered_follow_posts = list(filter(lambda x: x[0] > user_info["lastLoginTime"], follow_posts_query_result))
       print("Posts from people you have followed: ")
-      if len(list(filtered_follow_posts)) == 0:
+      if len(filtered_follow_posts) == 0:
         print("No new post.")
       for row in filtered_follow_posts:
         self.cursor.execute("select post_ID, message, thumbs, is_read from User_post where '%s' = User_post.post_ID;" % row[1])
@@ -155,6 +154,7 @@ class PyMedia:
         print("Message: ", follow_post_message[0][1])
         print("Thumbs: ", follow_post_message[0][2])
         print("Is_read: ", follow_post_message[0][3])
+        print("\n")
         self.cursor.execute("UPDATE User_post SET is_read = 1 WHERE '%s' = User_post.post_ID;" % row[1])
         self.dbconnection.commit()
 
