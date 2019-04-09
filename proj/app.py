@@ -9,7 +9,7 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="root"
+      password="wocao"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
     self.cursor.execute("USE ECE356_project;")
@@ -60,7 +60,7 @@ class PyMedia:
       self.cursor.execute("UPDATE Account SET lastLoginTime = CURRENT_TIMESTAMP WHERE Account.account_ID = '%s';" % user_info["id"])
       self.dbconnection.commit()
       # show posts
-      self.show_posts(username)
+      self.show_posts(user_info)
       self.logged_in(user_info)
     else:
       print("Sorry, your username or password is wrong.")
@@ -99,17 +99,45 @@ class PyMedia:
     elif command == "create response" or command == "cr":
       self.create_response(user_info) # create reply
     elif command == "help":
-      print('Avaliable commands: view posts(vp), create post(cp), upvote post(up), downvote post(dp), \
-        show all groups(sag), join group(jg), create group(cg), list of users(lou), follow user(fu), \
-        follow tags(ft), unfollow user(uu), unfollow tag(ut), create post(cp), create response(cr)')
+      print('Avaliable commands: view posts(vp), create post(cp), \n upvote post(up), downvote post(dp), \
+        \n show all groups(sag), join group(jg), \n create group(cg), list of users(lou), \n list of tags(lot), \
+        follow user(fu), \n follow tags(ft), unfollow user(uu), \n unfollow tag(ut), create post(cp), \
+        \n create response(cr)')
     else:
       print("Wrong command. Please enter again.")
     self.logged_in(user_info)
     # else if
 
-  def show_posts(self, username):
-    self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name ='%s' " % username)
-    self.cursor.fetchall()
+  def show_posts(self, user_info):
+    tag_posts_query = "SELECT lastLoginTime, post_ID, count(*) FROM \
+        (SELECT account_ID, lastLoginTime FROM Account WHERE account_ID = %s) as a \
+        INNER JOIN Follow_Tag USING (account_ID) \
+        INNER JOIN Post_Tag ON Follow_Tag.tag_Name = Post_Tag.tag_Name;"
+    tag_posts_query = tag_posts_query % user_info["id"]
+    self.cursor.execute(tag_posts_query)
+    tag_posts_query_result = self.cursor.fetchall()
+    #TODO followed users posts
+    number_of_posts = tag_posts_query_result[0][2] # + follow 
+    command = input("Hi, there are %s new post since you last login. Do you want to see all of these?(y/n)", number_of_posts)
+    if command == "y":
+      # TODO handle NULL lastLoginTime
+      filtered_posts = filter(lambda x: x[0] > user_info["lastLoginTime"], tag_posts_query_result)
+      print("Posts from tags you have followed: ")
+      for row in filtered_posts:
+        self.cursor.execute("select post_ID, message, thumbs, is_read from User_post where '%s' = User_post.post_ID;" % row[1])
+        post_message = self.cursor.fetchall()
+        print("Post_ID: ", post_message[0][0])
+        print("Message: ", post_message[0][1])
+        print("Thumbs: ", post_message[0][2])
+        print("Is_read: ", post_message[0][3])
+        self.cursor.execute("UPDATE User_post SET is_read = 1 WHERE '%s' = User_post.post_ID;" % result[1])
+        self.dbconnection.commit()
+    elif command == "n":
+      pass
+    else:
+      print("Wrong command. Please type y or n.")
+      self.show_posts(user_info)
+    
 
   def checkValid(self, table, column_id, check_id):
     check_id = int(check_id)
@@ -255,7 +283,7 @@ class PyMedia:
     post_id = self.cursor.lastrowid
 
     post_tags = input("What tags do you want to put? Seperate your tags with space. ")
-    post_tags = post_tags.split()
+    post_tags = set(post_tags.split())
     for post_tag in post_tags:
       create_tag_query = "insert into Post_Tag(tag_name, post_ID) values ('%s', %s);"
       create_tag_query = create_tag_query % (post_tag, post_id)
@@ -298,10 +326,7 @@ class PyMedia:
     print("Welcome!")
     self.login_or_register()
     
-
 # main method
 if __name__ == "__main__":
   app = PyMedia()
   app.start_app()
-
-

@@ -18,6 +18,6 @@
 3. add addResponsePost command DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEeeeeeeeeeeeeee
 
 ## BB
-1. add last_login_timestamp to user table
-2. add unread post right after login
-3. prompt if user want to see new post
+1. add last_login_timestamp to user table   DONE
+2. add unread post right after login        
+3. prompt if user want to see new post      

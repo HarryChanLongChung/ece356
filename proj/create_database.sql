@@ -5,7 +5,7 @@ USE ECE356_project;
 drop table if exists Account;
 drop table if exists User_group;
 drop table if exists Follower;
-drop table if exists Tag;
+drop table if exists Post_Tag;
 drop table if exists User_post;
 drop table if exists Follow_Tag;
 drop table if exists Group_members;
@@ -18,7 +18,7 @@ create table Account(
     lastName varchar(100), 
     sex varchar(100), 
     birthdate date,
-    lastLoginTime timestamp
+    lastLoginTime timestamp  DEFAULT 0
 );
 
 create table User_group(
@@ -48,7 +48,7 @@ create table User_post(
 );
 
 create table Follow_Tag(
-    tag_Name int(11),
+    tag_Name varchar(100),
     account_ID int(11)
 );
 
@@ -56,3 +56,6 @@ create table Group_members(
     group_ID int(11),
     account_ID int(11)
 );
+
+
+SELECT lastLoginTime, post_ID FROM (SELECT account_ID, lastLoginTime FROM Account WHERE account_ID = 1) as a INNER JOIN Follow_Tag USING (account_ID) INNER JOIN Post_Tag ON Follow_Tag.tag_Name = Post_Tag.tag_Name; 
