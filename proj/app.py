@@ -9,14 +9,13 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="root"
+      password="wocao"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
-    # self.cursor = self.dbconnection.cursor()
     self.cursor.execute("USE ECE356_project;")
   
   def login_or_register(self):
-    cmd1 = input("Please input command 'login' or 'register': ")
+    cmd1 = input("Please input command 'login' or 'register' (no space): ")
     if cmd1 == "login" or cmd1 == "lg":
       self.login()
     elif cmd1 == "register" or cmd1 == "rg":
@@ -53,6 +52,7 @@ class PyMedia:
     self.cursor.execute("SELECT count(*), account_ID FROM Account where account_Name = '%s' and password = '%s';" % (username, password))
     cursor_fetch_result = self.cursor.fetchall()
     if cursor_fetch_result[0][0] != 0: 
+      print("Your are logged in!")
       # user logged in, get the autoincrement ID
       user_info = { "id": cursor_fetch_result[0][1], "name": username }
       # show posts
@@ -63,41 +63,46 @@ class PyMedia:
       self.login()
 
   def logged_in(self, user_info):
-    print("Your are logged in. Do something.")
+    
     print("Please enter a command, type 'help' to see a list of commands.")
     command = input("Command: ")
-    if command == "1":
+    if command == "view posts" or command == "vp":
       self.view_posts() # view specific post
-    elif command == "2":
+    elif command == "upvote post" or command == "up":
       self.upvote() # upvote post
-    elif command == "3":
+    elif command == "downvote post" or command == "dp":
       self.downvote() # downvote post
-    elif command == "4":
+    elif command == "show all groups" or command == "sag":
       self.cursor.execute("SELECT * from User_group") # show all groups
       show_groups = self.cursor.fetchall()
       print(show_groups)
-    elif command == "5":
+    elif command == "join group" or command == "jg":
       self.joinGroup(user_info) # join group
-    elif command == "6":
+    elif command == "create group" or command == "cg":
       self.createGroup() # create group
-    elif command == "7":
+    elif command == "list of users" or command == "lou":
       self.cursor.execute("SELECT * from Account") # list of all users
       show_users = self.cursor.fetchall()
       print(show_users)
-    elif command == "8":
+    elif command == "follow user" or command == "fu":
       self.follow_user(user_info) # follow other users
-    elif command == "9":
+    elif command == "follow tags" or command == "ft":
       self.follow_tag(user_info) # follow tags
-    elif command == "create_post" or command == "cp":
+    elif command == "create post" or command == "cp":
       self.create_post(user_info) # join group
     elif command == "help":
-      print('list of commands')
+      print('Avaliable commands: view posts(vp), create post(cp), upvote post(up), downvote post(dp), \
+        show all groups(sag), join group(jg), create group(cg), list of users(lou), follow user(fu), \
+        follow tags(ft), create post(cp)')
+      self.logged_in(user_info)
     else:
+      print("Wrong command. Please enter again.")
       self.logged_in(user_info)
     # else if
 
   def show_posts(self, username):
     self.cursor.execute("SELECT * FROM User_post inner join Account using (account_ID) where Account.account_Name ='%s' " % username)
+    self.cursor.fetchall()
 
   def checkValid(self, table, column_id, check_id):
     check_id = int(check_id)
