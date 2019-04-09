@@ -18,7 +18,7 @@ create table Account(
     lastName varchar(100), 
     sex varchar(100), 
     birthdate date,
-    lastLoginTime timestamp  DEFAULT 0
+    lastLoginTime timestamp  DEFAULT "0000-00-00 00:00:00"
 );
 
 create table User_group(
@@ -56,6 +56,3 @@ create table Group_members(
     group_ID int(11),
     account_ID int(11)
 );
-
-
-SELECT lastLoginTime, post_ID FROM (SELECT account_ID, lastLoginTime FROM Account WHERE account_ID = 1) as a INNER JOIN Follow_Tag USING (account_ID) INNER JOIN Post_Tag ON Follow_Tag.tag_Name = Post_Tag.tag_Name; 
