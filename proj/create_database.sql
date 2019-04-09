@@ -17,7 +17,8 @@ create table Account(
     firstName varchar(100),
     lastName varchar(100), 
     sex varchar(100), 
-    birthdate date
+    birthdate date,
+    lastLoginTime timestamp
 );
 
 create table User_group(
