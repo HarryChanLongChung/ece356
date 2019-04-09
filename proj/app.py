@@ -49,12 +49,16 @@ class PyMedia:
     username = input("Username: ")
     password = input("Password: ")
     # check if password is correct
-    self.cursor.execute("SELECT count(*), account_ID FROM Account where account_Name = '%s' and password = '%s';" % (username, password))
+    self.cursor.execute("SELECT count(*), account_ID, lastLoginTime FROM Account where account_Name = '%s' and password = '%s';" % (username, password))
     cursor_fetch_result = self.cursor.fetchall()
     if cursor_fetch_result[0][0] != 0: 
       print("Your are logged in!")
-      # user logged in, get the autoincrement ID
-      user_info = { "id": cursor_fetch_result[0][1], "name": username }
+      # user logged in, get the autoincrement ID and last login time
+      user_info = { "id": cursor_fetch_result[0][1], "name": username, "lastLoginTime": cursor_fetch_result[0][2] }
+      print(user_info)
+      # update user login time
+      self.cursor.execute("UPDATE Account SET lastLoginTime = CURRENT_TIMESTAMP WHERE Account.account_ID = '%s';" % user_info["id"])
+      self.dbconnection.commit()
       # show posts
       self.show_posts(username)
       self.logged_in(user_info)

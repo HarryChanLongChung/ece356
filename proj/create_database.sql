@@ -18,7 +18,7 @@ create table Account(
     lastName varchar(100), 
     sex varchar(100), 
     birthdate date,
-    last_login timestamp DEFAULT CURRENT_TIMESTAMP
+    lastLoginTime timestamp
 );
 
 create table User_group(
