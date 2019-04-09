@@ -9,7 +9,7 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="wocao"
+      password="root"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
     self.cursor.execute("USE ECE356_project;")
@@ -67,37 +67,36 @@ class PyMedia:
     print("Please enter a command, type 'help' to see a list of commands.")
     command = input("Command: ")
     if command == "view posts" or command == "vp":
-      self.view_posts() # view specific post
+      self.view_posts(user_info) # view specific post
     elif command == "upvote post" or command == "up":
-      self.upvote() # upvote post
+      self.upvote(user_info) # upvote post
     elif command == "downvote post" or command == "dp":
-      self.downvote() # downvote post
+      self.downvote(user_info) # downvote post
     elif command == "show all groups" or command == "sag":
-      self.cursor.execute("SELECT * from User_group") # show all groups
-      show_groups = self.cursor.fetchall()
-      print(show_groups)
+      self.show_all_groups(user_info)
     elif command == "join group" or command == "jg":
       self.joinGroup(user_info) # join group
     elif command == "create group" or command == "cg":
-      self.createGroup() # create group
+      self.createGroup(user_info) # create group
     elif command == "list of users" or command == "lou":
-      self.cursor.execute("SELECT * from Account") # list of all users
-      show_users = self.cursor.fetchall()
-      print(show_users)
+      self.show_all_users(user_info) # show all users
+    elif command == "list of tags" or command == "lot":
+      self.show_all_tags(user_info) # show all tags
     elif command == "follow user" or command == "fu":
       self.follow_user(user_info) # follow other users
     elif command == "follow tags" or command == "ft":
       self.follow_tag(user_info) # follow tags
     elif command == "create post" or command == "cp":
       self.create_post(user_info) # join group
+    elif command == "create response" or command == "cr":
+      self.create_response(user_info) # create reply
     elif command == "help":
       print('Avaliable commands: view posts(vp), create post(cp), upvote post(up), downvote post(dp), \
         show all groups(sag), join group(jg), create group(cg), list of users(lou), follow user(fu), \
         follow tags(ft), create post(cp)')
-      self.logged_in(user_info)
     else:
       print("Wrong command. Please enter again.")
-      self.logged_in(user_info)
+    self.logged_in(user_info)
     # else if
 
   def show_posts(self, username):
@@ -146,6 +145,14 @@ class PyMedia:
       print("Success!")
     self.logged_in(user_info)
 
+  def show_all_groups(self, user_info):
+    self.cursor.execute("SELECT * from User_group") # show all groups
+    show_groups = self.cursor.fetchall()
+    i = 0
+    while(i < len(show_groups)):
+        print("Group ID:", show_groups[i][0], "; Group Name:", show_groups[i][1], "; Description:", show_groups[i][2])
+        i += 1
+
   def joinGroup(self, user_info):
     groupID = input("Enter the Group ID you would like to join: ")
     validGroup = self.checkValid("user_group", "group_ID", groupID)
@@ -164,6 +171,23 @@ class PyMedia:
     self.dbconnection.commit()
     print("Success!")
     self.logged_in(user_info)
+
+  def show_all_users(self, user_info):
+    self.cursor.execute("SELECT * from Account") # list of all users
+    show_users = self.cursor.fetchall()
+    i = 0
+    while(i < len(show_users)):
+        print("Account ID:", show_users[i][0], "; Account Name:", show_users[i][1], "; First Name:", show_users[i][3],
+          "; Last Name:", show_users[i][4], "; Sex:", show_users[i][5], "; Birthdate:", show_users[i][6], "; Last Login:", show_users[i][7])
+        i += 1
+
+  def show_all_tags(self, user_info):
+    self.cursor.execute("SELECT * from Tag") # list of all tags
+    show_tags = self.cursor.fetchall()
+    i = 0
+    while(i < len(show_tags)):
+        print("Tag ID:", show_tags[i][0], "; Tag Name:", show_tags[i][1], "; Tagged Post ID:", show_tags[i][2])
+        i += 1
 
   def follow_user(self, user_info):
     followID = input("Enter the account id of the person you wish to follow: ")
@@ -238,6 +262,19 @@ class PyMedia:
     self.dbconnection.commit()
     print("You have successfully created a post!")
     self.logged_in(user_info)
+  
+  def create_response(self, user_info):
+    parent_ID = input("Which post ID would you like to reply to? ")
+    validPost = self.checkValid("user_post", "post_ID", parent_ID)
+    if validPost == [(0,)]:
+      print("That is an invalid post ID")
+    else:
+      response_content = input("What is your reply message? ")
+      account_ID = int(user_info["id"])
+      parent_ID = int(parent_ID)
+      self.cursor.execute("INSERT INTO User_post (account_ID, message, parent_ID) VALUES (%d, '%s', %d );" % (account_ID, response_content, parent_ID))
+      self.dbconnection.commit()
+      print("Success!")
 
   # util funtions
   def executeScriptsFromFile(self, filename):

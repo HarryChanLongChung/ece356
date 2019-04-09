@@ -13,9 +13,9 @@
 11. user response to a post by response post (e) -- create table, 
 
 ## George
-1. add field in post table, parent_post_ID 
-2. add showAllTag command
-3. add addResponsePost command
+1. add field in post table, parent_post_ID  DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+2. add showAllTag command DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+3. add addResponsePost command DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEeeeeeeeeeeeeee
 
 ## BB
 1. add last_login_timestamp to user table

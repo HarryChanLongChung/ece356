@@ -17,7 +17,8 @@ create table Account(
     firstName varchar(100),
     lastName varchar(100), 
     sex varchar(100), 
-    birthdate date
+    birthdate date,
+    last_login timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 create table User_group(
@@ -43,7 +44,8 @@ create table User_post(
     account_ID int(11),
     message varchar(100), 
     thumbs int(11) DEFAULT 0, 
-    is_read int(11) DEFAULT 0
+    is_read int(11) DEFAULT 0,
+    parent_ID int(11) DEFAULT 0
 );
 
 create table FollowTag(
