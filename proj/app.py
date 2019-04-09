@@ -9,7 +9,7 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="wocao"
+      password="root"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
     # self.cursor = self.dbconnection.cursor()
@@ -74,8 +74,20 @@ class PyMedia:
       self.downvote() # downvote post
     elif command == "4":
       self.cursor.execute("SELECT * from User_group") # show all groups
+      show_groups = self.cursor.fetchall()
+      print(show_groups)
     elif command == "5":
       self.joinGroup(user_info) # join group
+    elif command == "6":
+      self.createGroup() # create group
+    elif command == "7":
+      self.cursor.execute("SELECT * from Account") # list of all users
+      show_users = self.cursor.fetchall()
+      print(show_users)
+    elif command == "8":
+      self.follow_user(user_info) # follow other users
+    elif command == "9":
+      self.follow_tag(user_info) # follow tags
     elif command == "create_post" or command == "cp":
       self.create_post(user_info) # join group
     elif command == "help":
@@ -114,6 +126,7 @@ class PyMedia:
     else:
       self.cursor.execute("UPDATE User_post SET thumbs = thumbs+1 WHERE \"%s\" = User_post.post_ID;" % postID)
       self.dbconnection.commit()
+      print("Success!")
 
   def downvote(self):
     postID = input("Enter the post ID you would like to downvote: ")
@@ -123,15 +136,44 @@ class PyMedia:
     else:
       self.cursor.execute("UPDATE User_post SET thumbs = thumbs-1 WHERE \"%s\" = User_post.post_ID;" % postID)
       self.dbconnection.commit()
+      print("Success!")
 
-  def joinGroup(self, username):
+  def joinGroup(self, user_info):
     groupID = input("Enter the Group ID you would like to join: ")
     validGroup = self.checkValid("user_group", "group_ID", groupID)
     if validGroup == [(0,)]:
       print("That is an invalid Group ID")
     else:
-      self.cursor.execute("INSERT INTO Group_members ( group_ID, account_ID ) VALUES ( \"%s\", \"%s\" );" % (groupID, password))
+      self.cursor.execute("INSERT INTO Group_members ( group_ID, account_ID ) VALUES ( '%s', '%s' );" % (groupID, user_info["id"]))
       self.dbconnection.commit()
+      print("Success!")
+
+  def createGroup(self):
+    groupName = input("Enter the name of the Group you would like to create: ")
+    groupDesc = input("Enter a description of your Group: ")
+    self.cursor.execute("INSERT INTO User_group ( group_Name, description ) VALUES ( '%s', '%s' );" % (groupName, groupDesc))
+    self.dbconnection.commit()
+    print("Success!")
+
+  def follow_user(self, user_info):
+    followID = input("Enter the account id of the person you wish to follow: ")
+    validUser = self.checkValid("account", "account_ID", followID)
+    if validUser == [(0,)]:
+      print("That is an invalid user ID")
+    else:
+      self.cursor.execute("INSERT INTO follower ( account_ID, follower_ID ) VALUES ( '%s', '%s' );" % (followID, user_info["id"]))
+      self.dbconnection.commit()
+      print("Success!")
+
+  def follow_tag(self, user_info):
+    tagID = input("Enter the tag id of the tag you wish to follow: ")
+    validtag = self.checkValid("tag", "tag_ID", tagID)
+    if validtag == [(0,)]:
+      print("That is an invalid tag ID")
+    else:
+      self.cursor.execute("INSERT INTO FollowTag ( tag_ID, account_ID ) VALUES ( '%s', '%s' );" % (tagID, user_info["id"]))
+      self.dbconnection.commit()
+      print("Success!")
 
   def create_post(self, user_info):
     post_content = input("What content would you like to post? ")
