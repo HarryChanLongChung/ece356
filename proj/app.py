@@ -125,6 +125,8 @@ class PyMedia:
       print("Message: ", post_message[0][1])
       print("Thumbs: ", post_message[0][2])
       print("Is_read: ", post_message[0][3])
+      self.cursor.execute("UPDATE User_post SET is_read = 1 WHERE '%s' = User_post.post_ID;" % postID)
+      self.dbconnection.commit()
     self.logged_in(user_info)
 
   def upvote(self, user_info):
