@@ -67,11 +67,11 @@ class PyMedia:
     print("Please enter a command, type 'help' to see a list of commands.")
     command = input("Command: ")
     if command == "1":
-      self.view_posts() # view specific post
+      self.view_posts(user_info) # view specific post
     elif command == "2":
-      self.upvote() # upvote post
+      self.upvote(user_info) # upvote post
     elif command == "3":
-      self.downvote() # downvote post
+      self.downvote(user_info) # downvote post
     elif command == "4":
       self.cursor.execute("SELECT * from User_group") # show all groups
       show_groups = self.cursor.fetchall()
@@ -79,7 +79,7 @@ class PyMedia:
     elif command == "5":
       self.joinGroup(user_info) # join group
     elif command == "6":
-      self.createGroup() # create group
+      self.createGroup(user_info) # create group
     elif command == "7":
       self.cursor.execute("SELECT * from Account") # list of all users
       show_users = self.cursor.fetchall()
@@ -88,6 +88,10 @@ class PyMedia:
       self.follow_user(user_info) # follow other users
     elif command == "9":
       self.follow_tag(user_info) # follow tags
+    elif command == "10":
+      self.unfollow_user(user_info) # follow other users
+    elif command == "11":
+      self.unfollow_tag(user_info) # follow tags  
     elif command == "create_post" or command == "cp":
       self.create_post(user_info) # join group
     elif command == "help":
@@ -105,7 +109,7 @@ class PyMedia:
     validCheck = self.cursor.fetchall()
     return validCheck
 
-  def view_posts(self):
+  def view_posts(self, user_info):
     postID = input("Enter the post ID you would like to view: ")
     validPost = self.checkValid("user_post", "post_ID", postID)
     if validPost == [(0,)]:
@@ -117,8 +121,9 @@ class PyMedia:
       print("Message: ", post_message[0][1])
       print("Thumbs: ", post_message[0][2])
       print("Is_read: ", post_message[0][3])
+    self.logged_in(user_info)
 
-  def upvote(self):
+  def upvote(self, user_info):
     postID = input("Enter the post ID you would like to upvote: ")
     validPost = self.checkValid("user_post", "post_ID", postID)
     if validPost == [(0,)]:
@@ -127,8 +132,9 @@ class PyMedia:
       self.cursor.execute("UPDATE User_post SET thumbs = thumbs+1 WHERE '%s' = User_post.post_ID;" % postID)
       self.dbconnection.commit()
       print("Success!")
+    self.logged_in(user_info)
 
-  def downvote(self):
+  def downvote(self, user_info):
     postID = input("Enter the post ID you would like to downvote: ")
     validPost = self.checkValid("user_post", "post_ID", postID)
     if validPost == [(0,)]:
@@ -137,6 +143,7 @@ class PyMedia:
       self.cursor.execute("UPDATE User_post SET thumbs = thumbs-1 WHERE '%s' = User_post.post_ID;" % postID)
       self.dbconnection.commit()
       print("Success!")
+    self.logged_in(user_info)
 
   def joinGroup(self, user_info):
     groupID = input("Enter the Group ID you would like to join: ")
@@ -147,13 +154,15 @@ class PyMedia:
       self.cursor.execute("INSERT INTO Group_members ( group_ID, account_ID ) VALUES ( '%s', '%s' );" % (groupID, user_info["id"]))
       self.dbconnection.commit()
       print("Success!")
+    self.logged_in(user_info)
 
-  def createGroup(self):
+  def createGroup(self, user_info):
     groupName = input("Enter the name of the Group you would like to create: ")
     groupDesc = input("Enter a description of your Group: ")
     self.cursor.execute("INSERT INTO User_group ( group_Name, description ) VALUES ( '%s', '%s' );" % (groupName, groupDesc))
     self.dbconnection.commit()
     print("Success!")
+    self.logged_in(user_info)
 
   def follow_user(self, user_info):
     followID = input("Enter the account id of the person you wish to follow: ")
@@ -164,6 +173,7 @@ class PyMedia:
       self.cursor.execute("INSERT INTO follower ( account_ID, follower_ID ) VALUES ( '%s', '%s' );" % (followID, user_info["id"]))
       self.dbconnection.commit()
       print("Success!")
+    self.logged_in(user_info)
 
   def follow_tag(self, user_info):
     tagID = input("Enter the tag id of the tag you wish to follow: ")
@@ -174,6 +184,41 @@ class PyMedia:
       self.cursor.execute("INSERT INTO FollowTag ( tag_ID, account_ID ) VALUES ( '%s', '%s' );" % (tagID, user_info["id"]))
       self.dbconnection.commit()
       print("Success!")
+    self.logged_in(user_info)
+
+  def unfollow_user(self, user_info):
+    followID = input("Enter the account id of the person you wish to unfollow: ")
+    validUser = self.checkValid("account", "account_ID", followID)
+    followID = int(followID)
+    user_ID = int(user_info["id"])
+    self.cursor.execute("select count(*) from follower where follower.account_ID = %d and follower.follower_ID = %d" % (followID, user_ID))
+    validFollow = self.cursor.fetchall()
+    if validUser == [(0,)]:
+      print("That is an invalid user ID")
+    elif validFollow == [(0,)]:
+      print("You are not followed to them")
+    else:
+      self.cursor.execute("DELETE FROM follower where follower.account_ID = %d and follower.follower_ID = %d;" % (followID, user_ID))
+      self.dbconnection.commit()
+      print("Success!")
+    self.logged_in(user_info)
+
+  def unfollow_tag(self, user_info):
+    tagID = input("Enter the tag id of the tag you wish to unfollow: ")
+    validTag = self.checkValid("tag", "tag_ID", tagID)
+    tagID = int(tagID)
+    user_ID = int(user_info["id"])
+    self.cursor.execute("select count(*) from followerTag where followerTag.tag_ID = %d and followerTag.account_ID = %d" % (tagID, user_ID))
+    validFollow = self.cursor.fetchall()
+    if validTag == [(0,)]:
+      print("That is an invalid tag ID")
+    elif validFollow == [(0,)]:
+      print("You are not followed to this tag")
+    else:
+      self.cursor.execute("DELETE FROM followerTag where follower.tag_ID = %d and follower.account_ID = %d;" % (tagID, user_ID))
+      self.dbconnection.commit()
+      print("Success!")
+    self.logged_in(user_info)
 
   def create_post(self, user_info):
     post_content = input("What content would you like to post? ")
