@@ -7,7 +7,7 @@ drop table if exists User_group;
 drop table if exists Follower;
 drop table if exists Tag;
 drop table if exists User_post;
-drop table if exists FollowTag;
+drop table if exists Follow_Tag;
 drop table if exists Group_members;
 
 create table Account(
@@ -32,8 +32,7 @@ create table Follower(
     follower_ID int(11)
 );
 
-create table Tag(
-    tag_ID int(11) AUTO_INCREMENT primary key, 
+create table Post_Tag(
     tag_Name varchar(100), 
     post_ID int(11)
 );
@@ -48,8 +47,8 @@ create table User_post(
     parent_ID int(11) DEFAULT 0
 );
 
-create table FollowTag(
-    tag_ID int(11),
+create table Follow_Tag(
+    tag_Name int(11),
     account_ID int(11)
 );
 

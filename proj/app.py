@@ -90,6 +90,10 @@ class PyMedia:
       self.follow_user(user_info) # follow other users
     elif command == "follow tags" or command == "ft":
       self.follow_tag(user_info) # follow tags
+    elif command == "unfollow user" or command == "uu":
+      self.unfollow_user(user_info) # unfollow other users
+    elif command == "unfollow tags" or command == "ut":
+      self.unfollow_tag(user_info) # unfollow tags
     elif command == "create post" or command == "cp":
       self.create_post(user_info) # join group
     elif command == "create response" or command == "cr":
@@ -97,7 +101,7 @@ class PyMedia:
     elif command == "help":
       print('Avaliable commands: view posts(vp), create post(cp), upvote post(up), downvote post(dp), \
         show all groups(sag), join group(jg), create group(cg), list of users(lou), follow user(fu), \
-        follow tags(ft), create post(cp)')
+        follow tags(ft), unfollow user(uu), unfollow tag(ut), create post(cp), create response(cr)')
     else:
       print("Wrong command. Please enter again.")
     self.logged_in(user_info)
@@ -188,11 +192,11 @@ class PyMedia:
         i += 1
 
   def show_all_tags(self, user_info):
-    self.cursor.execute("SELECT * from Tag") # list of all tags
+    self.cursor.execute("SELECT * from Post_Tag") # list of all tags
     show_tags = self.cursor.fetchall()
     i = 0
     while(i < len(show_tags)):
-        print("Tag ID:", show_tags[i][0], "; Tag Name:", show_tags[i][1], "; Tagged Post ID:", show_tags[i][2])
+        print("Tag Name:", show_tags[i][0], "; Tagged Post ID:", show_tags[i][1])
         i += 1
 
   def follow_user(self, user_info):
@@ -207,14 +211,10 @@ class PyMedia:
     self.logged_in(user_info)
 
   def follow_tag(self, user_info):
-    tagID = input("Enter the tag id of the tag you wish to follow: ")
-    validtag = self.checkValid("tag", "tag_ID", tagID)
-    if validtag == [(0,)]:
-      print("That is an invalid tag ID")
-    else:
-      self.cursor.execute("INSERT INTO FollowTag ( tag_ID, account_ID ) VALUES ( '%s', '%s' );" % (tagID, user_info["id"]))
-      self.dbconnection.commit()
-      print("Success!")
+    tagName = input("Enter the name of the tag you wish to follow: ")
+    self.cursor.execute("INSERT INTO Follow_Tag ( tag_Name, account_ID ) VALUES ( '%s', '%s' );" % (tagName, user_info["id"]))
+    self.dbconnection.commit()
+    print("Success!")
     self.logged_in(user_info)
 
   def unfollow_user(self, user_info):
@@ -235,18 +235,14 @@ class PyMedia:
     self.logged_in(user_info)
 
   def unfollow_tag(self, user_info):
-    tagID = input("Enter the tag id of the tag you wish to unfollow: ")
-    validTag = self.checkValid("tag", "tag_ID", tagID)
-    tagID = int(tagID)
+    tagName = input("Enter the name of the tag that you wish to unfollow: ")
     user_ID = int(user_info["id"])
-    self.cursor.execute("select count(*) from followerTag where followerTag.tag_ID = %d and followerTag.account_ID = %d" % (tagID, user_ID))
+    self.cursor.execute("select count(*) from Follow_Tag where Follow_Tag.tag_Name = '%s' and Follow_Tag.account_ID = %d" % (tagName, user_ID))
     validFollow = self.cursor.fetchall()
-    if validTag == [(0,)]:
-      print("That is an invalid tag ID")
-    elif validFollow == [(0,)]:
+    if validFollow == [(0,)]:
       print("You are not followed to this tag")
     else:
-      self.cursor.execute("DELETE FROM followerTag where follower.tag_ID = %d and follower.account_ID = %d;" % (tagID, user_ID))
+      self.cursor.execute("DELETE FROM Follow_Tag where Follow_Tag.tag_Name = '%s' and Follow_Tag.account_ID = %d;" % (tagName, user_ID))
       self.dbconnection.commit()
       print("Success!")
     self.logged_in(user_info)
@@ -261,7 +257,7 @@ class PyMedia:
     post_tags = input("What tags do you want to put? Seperate your tags with space. ")
     post_tags = post_tags.split()
     for post_tag in post_tags:
-      create_tag_query = "insert into Tag(tag_name, post_ID) values ('%s', %s);"
+      create_tag_query = "insert into Post_Tag(tag_name, post_ID) values ('%s', %s);"
       create_tag_query = create_tag_query % (post_tag, post_id)
       self.cursor.execute(create_tag_query)
 
