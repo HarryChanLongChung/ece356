@@ -9,9 +9,13 @@ class PyMedia:
     self.dbconnection = mysql.connector.connect(
       host="localhost",
       user="root",
-      password="wocao"
+      password="root"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
+    self.cursor.execute("select count(*) from information_schema.tables where Table_schema = 'ece356_project';")
+    check_database = self.cursor.fetchall()
+    if check_database == [(0,)]:
+      self.executeScriptsFromFile("./create_database.sql")
     self.cursor.execute("USE ECE356_project;")
   
   def login_or_register(self):
@@ -98,7 +102,7 @@ class PyMedia:
     elif command == "create response" or command == "cr":
       self.create_response(user_info) # create reply
     elif command == "exit" or command == "q":
-      return
+      exit()
     elif command == "help":
       print('Avaliable commands: view posts(vp), create post(cp), \n upvote post(up), downvote post(dp), \
         \n show all groups(sag), join group(jg), \n create group(cg), list of users(lou), \n list of tags(lot), \
