@@ -73,3 +73,36 @@ After connecting to database:
 12. 1
 13. reply
 Now you have replied to the post
+
+
+## Command list to create a group and join it
+After connecting to database:
+1. rg
+2. username
+3. password
+4. lg
+5. username
+6. password
+7. n
+8. cg
+9. group1
+10. description
+11. jg
+12. 1
+Now you have joined your group
+
+## Command list to create post, thumb up it and follow its tag
+After connecting to database:
+1. rg
+2. username
+3. password
+4. lg
+5. username
+6. password
+7. n
+8. cp
+9. canada
+10. canada
+11. ft
+12. canada
+Now you have created a canada post and followed its tag
