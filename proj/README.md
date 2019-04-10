@@ -1,9 +1,12 @@
 ## Option 2 A Simple Social Network
-First, make sure you have a local mysql database running.
-In the def connect_db(self) please enter your mysql hostname in the host variable, 
-your mysql username in user,
-and your mysql password in password.
-Now you can run the app.py
+requirements/instructions:
+1. Python 3 (developed with 3.7.3)
+4. Install mysql connector package with command `pip3 install mysql-connector-python`
+1. A local mysql database running
+2. An account that can be used in mysql server
+5. Put account username and password at line 17 in app.py
+Now you can run the app.py with command "python3 app.py"
+
 After connecting to database:
 First register account by typing 'rg' and inputting your username and password
 1.  To inital post, use command 'create post' or 'cp'

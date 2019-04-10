@@ -12,21 +12,20 @@ class PyMedia:
       password="root"
     )
     self.cursor = self.dbconnection.cursor(buffered=True)
-    self.cursor.execute("select count(*) from information_schema.tables where Table_schema = 'ece356_project';")
+    self.cursor.execute("select count(*) from information_schema.tables where Table_schema = 'ECE356_project_group6';")
     check_database = self.cursor.fetchall()
     if check_database == [(0,)]:
       self.executeScriptsFromFile("./create_database.sql")
-    self.cursor.execute("USE ECE356_project;")
+    self.cursor.execute("USE ECE356_project_group6;")
   
   def login_or_register(self):
-    cmd1 = input("Please input command 'login' or 'register' (no space): ")
+    cmd1 = input("Please input command 'login' or 'register', 'exit' to quit (no space): ")
     if cmd1 == "login" or cmd1 == "lg":
       self.login()
     elif cmd1 == "register" or cmd1 == "rg":
       self.register()
-    elif cmd1 == "createDB":
-      self.executeScriptsFromFile("./create_database.sql")
-      self.login_or_register()
+    elif cmd1 == "exit" or cmd1 == "q":
+      exit()
     else:
       print("Wrong command.")
       self.login_or_register()

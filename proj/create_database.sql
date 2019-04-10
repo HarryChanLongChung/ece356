@@ -1,6 +1,5 @@
-DROP DATABASE IF EXISTS ECE356_project;
-CREATE DATABASE ECE356_project;
-USE ECE356_project;
+CREATE DATABASE ECE356_project_group6;
+USE ECE356_project_group6;
 drop table if exists Account;
 drop table if exists User_group;
 drop table if exists Follower;
