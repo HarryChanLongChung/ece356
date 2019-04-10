@@ -97,6 +97,8 @@ class PyMedia:
       self.create_post(user_info) # join group
     elif command == "create response" or command == "cr":
       self.create_response(user_info) # create reply
+    elif command == "exit" or command == "q":
+      return
     elif command == "help":
       print('Avaliable commands: view posts(vp), create post(cp), \n upvote post(up), downvote post(dp), \
         \n show all groups(sag), join group(jg), \n create group(cg), list of users(lou), \n list of tags(lot), \
@@ -105,7 +107,6 @@ class PyMedia:
     else:
       print("Wrong command. Please enter again.")
     self.logged_in(user_info)
-    # else if
 
   def show_posts(self, user_info):
     command = input("Hi, there are some new post since you last login. Do you want to see all of these?(y/n)")
@@ -254,12 +255,13 @@ class PyMedia:
         i += 1
 
   def follow_user(self, user_info):
-    followID = input("Enter the account id of the person you wish to follow: ")
-    validUser = self.checkValid("account", "account_ID", followID)
-    if validUser == [(0,)]:
+    follow_username = input("Enter the username of the person you wish to follow: ")
+    self.cursor.execute("SELECT count(*), account_ID FROM Account where account_Name = '%s';" % follow_username)
+    cursor_fetch_result = self.cursor.fetchall()
+    if cursor_fetch_result[0][0] == 0:
       print("That is an invalid user ID")
     else:
-      self.cursor.execute("INSERT INTO follower ( account_ID, follower_ID ) VALUES ( '%s', '%s' );" % (followID, user_info["id"]))
+      self.cursor.execute("INSERT INTO follower ( account_ID, follower_ID ) VALUES ( '%s', '%s' );" % (cursor_fetch_result[0][1], user_info["id"]))
       self.dbconnection.commit()
       print("Success!")
     self.logged_in(user_info)
@@ -272,18 +274,16 @@ class PyMedia:
     self.logged_in(user_info)
 
   def unfollow_user(self, user_info):
-    followID = input("Enter the account id of the person you wish to unfollow: ")
-    validUser = self.checkValid("account", "account_ID", followID)
-    followID = int(followID)
-    user_ID = int(user_info["id"])
-    self.cursor.execute("select count(*) from follower where follower.account_ID = %d and follower.follower_ID = %d" % (followID, user_ID))
-    validFollow = self.cursor.fetchall()
-    if validUser == [(0,)]:
-      print("That is an invalid user ID")
-    elif validFollow == [(0,)]:
+    unfollow_username = input("Enter the username of the person you wish to unfollow: ")
+    self.cursor.execute("SELECT count(*), Account.account_ID as followed_ID FROM Account \
+      INNER JOIN Follower ON Account.account_ID = Follower.account_ID \
+        where Account.account_Name = '%s';" % unfollow_username)
+    cursor_fetch_result = self.cursor.fetchall()
+    if cursor_fetch_result[0][0] == 0:
       print("You are not followed to them")
     else:
-      self.cursor.execute("DELETE FROM follower where follower.account_ID = %d and follower.follower_ID = %d;" % (followID, user_ID))
+      followedID = cursor_fetch_result[0][1]
+      self.cursor.execute("DELETE FROM follower where follower.account_ID = %d and follower.follower_ID = %d;" % (followedID, user_info["id"]))
       self.dbconnection.commit()
       print("Success!")
     self.logged_in(user_info)
